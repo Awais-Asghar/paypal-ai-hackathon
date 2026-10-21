@@ -26,7 +26,7 @@
 │  Payment Gate (single choke point for all money movement)                                            │
 │    create hold → assess → verify → decide → capture+payout │ void   (idempotent, audit-logged)       │
 │                                                                                                      │
-│  Check-in Agent (Claude, tool use)            Risk Engine                                            │
+│  Check-in Agent (LLM, tool use)               Risk Engine                                            │
 │    conversation · screenshot (vision) ·         rules (hard red flags) + LLM structured verdict      │
 │    voicemail transcript · family summary        → LOW / MEDIUM / HIGH + reasons                      │
 │                                                                                                      │
@@ -79,7 +79,7 @@ Nana taps "Send $2,500 to Ethan"
 
 | Piece | Model use | Output |
 |---|---|---|
-| Check-in conversation | Claude (tool use), warm and non-judgmental, plain language, the protected person's language | Next question or explanation |
+| Check-in conversation | LLM with tool use, warm and non-judgmental, plain language, the protected person's language | Next question or explanation |
 | Evidence reading | Vision for screenshots; speech-to-text for voicemail audio | Extracted claims (who, what, urgency, secrecy, payment method, new contact) |
 | Risk verdict | Structured output (JSON schema): `risk`, `scam_type`, `red_flags[]`, `reasons_plain[]` | Combined with hard rules → final risk |
 | Family summary | Short summary for the trusted circle | One-screen card |
@@ -87,7 +87,12 @@ Nana taps "Send $2,500 to Ethan"
 
 **Agent tools (read-only + propose):** `get_hold`, `get_payee_history` (Transaction Search baseline), `get_circle`, `record_red_flag`, `request_verification`, `propose_decision`.
 
-Models: `claude-sonnet-5-5` for the conversation loop; `claude-opus-5-5` for the final risk verdict if quality requires it. The model is pinned in config.
+**Provider:** pluggable, chosen with `LLM_PROVIDER` in `.env`, so switching needs no code changes.
+- Default: **Google Gemini Flash** on the free Gemini API tier (chat, tool use, JSON structured output, image and audio input).
+- **Groq** (free) for voicemail transcription (Whisper) and as a fallback model when Gemini is rate-limited.
+- Anthropic Claude stays supported as an option.
+
+The exact model IDs are pinned in config after checking the provider's current model list. The safety rules above are enforced in code, so a smaller free model can't weaken them. Demo scenarios keep a cached fallback so the hosted demo still plays if the free tier is rate-limited.
 
 ## Data model (first cut)
 
@@ -107,7 +112,7 @@ Models: `claude-sonnet-5-5` for the conversation loop; `claude-opus-5-5` for the
 | Frontend | Next.js (App Router) + React + Tailwind, phone-first layouts for Nana/Ethan |
 | Payments UI | PayPal JS SDK (v6) for buyer approval |
 | Backend | Next.js route handlers (TypeScript); REST calls to PayPal (Orders, Payments, Payouts, Identity, Reporting) |
-| AI | Anthropic Claude API (tool use + structured output); speech-to-text for voicemail |
+| AI | Google Gemini API, free tier (tool use, structured output, vision, audio); Groq Whisper for voicemail; provider adapter so Claude/Groq can be swapped in |
 | Data | SQLite locally → Postgres on Render |
 | Jobs | Render cron or Workflows (expiry, cooling-off) |
 | Dev tooling | PayPal AI Toolkit, APIMatic Context Plugin (prize eligibility), Postman PayPal collections |

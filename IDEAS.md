@@ -11,7 +11,21 @@ Status: **no idea chosen yet.** Once one is picked, record it in [ARCHITECTURE.m
 4. **The demo has to land in under 3 minutes.** Presentation is 20% of the score, and Best Demo Delivery is its own $5k prize. Each idea needs one moment the judges will remember.
 5. **Stack a sponsor prize where it fits naturally.** APIMatic is nearly free: use its Context Plugin while coding and answer one form question.
 
-Scores run 1–5 on each judging criterion. **Build** = feasibility for a small team in about 3 weeks on the sandbox (5 = easy).
+Scores run 1–5 on each judging criterion. **Build** = feasibility for a solo builder in about 3 weeks on the sandbox (5 = easy).
+
+### How the scores work
+
+These scores are **my own judgment calls**, not measurements. They're a way to compare ideas, not a prediction of what the judges will give. Each criterion is scored on a few questions:
+
+| Criterion | 5 means… | 1 means… |
+|---|---|---|
+| **Tech** | 3+ PayPal APIs in a real two-way money flow (collect *and* pay out), webhooks drive the state, and an AI agent makes real tool calls that move money | One PayPal call (a checkout button), AI only generates text |
+| **Design** | One clear user and one clear journey, a complete product feel buildable solo | A sprawling multi-sided system, hard to make coherent |
+| **Impact** | A large, specific audience with a known, painful problem the demo visibly solves | A nice-to-have for a vague audience |
+| **Innovation** | No existing product or hackathon project does this; not on PayPal or sponsor idea lists | Big products already do exactly this |
+| **Presentation** | One dramatic, visual moment that explains itself in 10 seconds | Mostly backend, nothing to see on screen |
+
+The first draft scored Innovation without researching existing products. After a web search on 2026-10-21 (see [Prior art](#prior-art-check-2026-10-21)), Innovation was lowered for 10 of the 12 ideas.
 
 ---
 
@@ -21,7 +35,7 @@ Scores run 1–5 on each judging criterion. **Build** = feasibility for a small 
 
 > Every savings circle runs on one person: the organizer, who collects the money, chases late payers and settles fights over who gets paid out next. Kameti replaces that person with an AI agent, while the money itself moves only through PayPal.
 
-**Problem and audience.** Around a billion people save through rotating savings circles (ROSCAs): *committee/kameti* in Pakistan and India, *tanda* in Mexico, *susu* in West Africa and the Caribbean, *chama* in Kenya, *hui* in China, *gameya* in Egypt, *kye* in Korea. Each member pays a fixed amount every month, and each month one member takes the whole pot. It's interest-free credit built on trust, and it breaks for familiar reasons: organizers disappear with the money, payments arrive late, people argue about payout order, and diaspora members can't easily pay across borders. There's no PayPal-native, AI-run version of this.
+**Problem and audience.** Around a billion people save through rotating savings circles (ROSCAs): *committee/kameti* in Pakistan and India, *tanda* in Mexico, *susu* in West Africa and the Caribbean, *chama* in Kenya, *hui* in China, *gameya* in Egypt, *kye* in Korea. Each member pays a fixed amount every month, and each month one member takes the whole pot. It's interest-free credit built on trust, and it breaks for familiar reasons: organizers disappear with the money, payments arrive late, people argue about payout order, and diaspora members can't easily pay across borders. Digital ROSCA apps already exist (MoneyFellows, ElGameya, Daret), and crypto hackathons have done AI-managed versions (SusuFlow AI, Tanda). We found **no PayPal/fiat version where an AI agent does the organizer's hard work** (failure handling, payout swaps, mediation). See [Prior art](#prior-art-check-2026-10-21).
 
 **How it works**
 1. **Set up in plain language.** "10 cousins, $50 a month, starting December. Ayesha's wedding is in March, so she gets the March pot." The agent drafts the circle rules and payout schedule, and each member approves.
@@ -46,7 +60,7 @@ Scores run 1–5 on each judging criterion. **Build** = feasibility for a small 
 
 | Tech | Design | Impact | Innovation | Presentation | Build |
 |---|---|---|---|---|---|
-| 5 | 4 | 5 | 5 | 5 | 3 |
+| 5 | 4 | 5 | 3 (was 5 before the prior-art check) | 5 | 3 |
 
 Prize targets: Grand Prize, Most Impactful, Most Creative, Best Use of PayPal + AI, plus Bryntum or APIMatic.
 
@@ -77,7 +91,7 @@ Prize targets: Grand Prize, Most Impactful, Most Creative, Best Use of PayPal + 
 
 | Tech | Design | Impact | Innovation | Presentation | Build |
 |---|---|---|---|---|---|
-| 5 | 4 | 4 | 4 | 5 | 3 |
+| 5 | 4 | 4 | 3 (was 4) | 5 | 3 |
 
 Prize targets: Best Use of Agentic Commerce, Grand Prize, plus AG Grid or Channel3.
 
@@ -103,7 +117,7 @@ Prize targets: Best Use of Agentic Commerce, Grand Prize, plus AG Grid or Channe
 
 | Tech | Design | Impact | Innovation | Presentation | Build |
 |---|---|---|---|---|---|
-| 4 | 4 | 5 | 4 | 4 | 4 |
+| 4 | 4 | 5 | 2 (was 4: PayPal's own Xoom already pays bills abroad) | 4 | 4 |
 
 ---
 
@@ -112,29 +126,29 @@ Prize targets: Best Use of Agentic Commerce, Grand Prize, plus AG Grid or Channe
 ### 4. Rebuttal: an AI dispute-defense paralegal for small sellers
 The agent reads each new **PayPal dispute**, classifies the reason, and pulls evidence on its own: order details, shipment tracking from the Tracking API, delivery confirmation, customer messages. It writes a response tailored to the reason code, submits evidence through the **Disputes API**, and tracks every response deadline on a **Bryntum Scheduler** board. It also learns which evidence wins. Small sellers lose a lot to "friendly fraud" mostly because they miss deadlines or send weak evidence.
 *Risk:* creating realistic disputes in the sandbox takes effort (buyer opens a case from the sandbox Resolution Center). PayPal judges know disputes deeply, which cuts both ways. Bryntum's list already includes a "dispute triage board", so the AI paralegal angle has to carry the novelty.
-Scores: Tech 5 · Design 4 · Impact 4 · Innovation 3 · Presentation 4 · Build 3
+Scores: Tech 5 · Design 4 · Impact 4 · Innovation 2 (was 3: Chargeflow and Justt already automate PayPal disputes with AI) · Presentation 4 · Build 3
 
 ### 5. Handshake: AI-verified milestone escrow for freelancers
 The client's payment is **authorized** (Orders `intent=AUTHORIZE`) at contract time. Acceptance criteria are written in plain language and the AI turns them into checks. When work is delivered (GitHub PR, Figma link, files), the AI verifies it against those criteria and the milestone is **captured** and paid out. A Bryntum Gantt shows payment tranches as dependencies. Close to PayPal's own "pay contractors when the job is done" example, so it needs a sharp twist.
 *Risk:* authorizations hold for 29 days with a 3-day honor period, so it needs reauthorization logic.
-Scores: Tech 4 · Design 4 · Impact 4 · Innovation 3 · Presentation 4 · Build 4
+Scores: Tech 4 · Design 4 · Impact 4 · Innovation 2 (was 3: many AI-escrow hackathon projects, all crypto) · Presentation 4 · Build 4
 
 ### 6. Bounty Board: AI-judged open-source bounties paid through PayPal
 Maintainers fund a bounty on a GitHub issue. When a PR merges, an AI reviewer checks it against the issue (tests pass, scope met, not a spam PR) and pays the contributor through **Payouts**. That puts fiat into contributors' accounts worldwide, with no crypto. PayPal's DevRel judges openly want PRs on their AI-Toolkit, so the pitch writes itself.
-Scores: Tech 4 · Design 3 · Impact 4 · Innovation 3 · Presentation 4 · Build 4
+Scores: Tech 4 · Design 3 · Impact 4 · Innovation 2 (was 3: Algora already pays on merge) · Presentation 4 · Build 4
 
 ### 7. Tollbooth: let AI agents pay per call for your API or MCP server
 A gateway that lets any MCP server or API developer charge agents per tool call. Agents top up a prepaid balance with PayPal Orders, usage is metered, and developers are paid through Payouts. AI suggests pricing and detects abusive callers. It's a developer-infrastructure play on agentic commerce, but harder to make visual in a video.
-Scores: Tech 5 · Design 3 · Impact 4 · Innovation 4 · Presentation 3 · Build 3
+Scores: Tech 5 · Design 3 · Impact 4 · Innovation 3 (was 4: many x402 crypto pay-per-call MCP servers; no PayPal one found) · Presentation 3 · Build 3
 
 ### 8. Khata: a voice ledger for corner-shop credit
 In South Asia, corner shops run on *udhaar*: customers buy on credit and the shopkeeper writes it in a notebook. Khata takes voice notes in Urdu, Hindi or English ("Ali bhai, 2 kg sugar, 500"), keeps the ledger, and sends each customer a **PayPal Invoice with a QR code** or a payment link to settle. It also sends polite reminders in the customer's language and flags risky credit.
 *Risk:* PayPal's limited availability in some of these markets is an obvious judge question. Frame it as diaspora shops in the UK and US first.
-Scores: Tech 4 · Design 4 · Impact 4 · Innovation 4 · Presentation 4 · Build 4
+Scores: Tech 4 · Design 4 · Impact 4 · Innovation 2 (was 4: Khatabook and OkCredit already do this with payment-link reminders) · Presentation 4 · Build 4
 
 ### 9. Haggle: a live agent-to-agent negotiation bazaar
 Seller agents hold private floor prices and inventory (Channel3 catalog). A buyer agent with a budget negotiates in a visible chat, and the deal settles through PayPal Orders with automatic platform and seller splits. It's very watchable and strong for Most Creative, but it's on PayPal's own inspiration list, so expect several of these.
-Scores: Tech 4 · Design 4 · Impact 3 · Innovation 3 · Presentation 5 · Build 4
+Scores: Tech 4 · Design 4 · Impact 3 · Innovation 2 (was 3: ArcAgent, Klodi, academic work) · Presentation 5 · Build 4
 
 ### 10. Churn Doctor: a retention agent for indie SaaS on PayPal Subscriptions
 The agent watches subscription webhooks (cancellation, payment failed), reads the churn reason, and builds a personal save offer: pause, downgrade through the plan revise API, or a discount. It then executes the change on PayPal. An AG Studio dashboard shows cohorts with a Studio agent you can ask "why did MRR drop?". A useful business tool, but less novel.
@@ -142,7 +156,7 @@ Scores: Tech 4 · Design 4 · Impact 3 · Innovation 3 · Presentation 4 · Buil
 
 ### 11. Second Life: snap it, price it, sell it
 Photograph an item you want to sell. AI identifies it, prices it from market comparables (Channel3), writes the listing, and creates a **PayPal checkout link**. An agent answers buyer questions, and shipment tracking is added automatically after payment.
-Scores: Tech 3 · Design 4 · Impact 3 · Innovation 3 · Presentation 4 · Build 4
+Scores: Tech 3 · Design 4 · Impact 3 · Innovation 1 (was 3: eBay has this built in) · Presentation 4 · Build 4
 
 ### 12. Proof of Good: donations released only on verified impact
 Donors give through the PayPal Donate SDK. The NGO's field partners get paid through Payouts only after they upload evidence (photos, receipts, geotags) that an AI verifies. Donors get a live impact feed. This overlaps with PayPal's "nonprofit field payouts" example.
@@ -154,28 +168,60 @@ Scores: Tech 4 · Design 4 · Impact 5 · Innovation 3 · Presentation 4 · Buil
 
 | # | Idea | Tech | Design | Impact | Innov. | Present. | **Total /25** | Build | Best prize angle |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | **Kameti** (AI savings circles) | 5 | 4 | 5 | 5 | 5 | **24** | 3 | Grand / Most Impactful + Bryntum |
-| 2 | **Leash** (agent spending guardrails) | 5 | 4 | 4 | 4 | 5 | **22** | 3 | Agentic Commerce + AG Grid |
-| 3 | **Earmark** (purpose-locked remittance) | 4 | 4 | 5 | 4 | 4 | **21** | 4 | Most Impactful |
-| 8 | Khata (voice credit ledger) | 4 | 4 | 4 | 4 | 4 | 20 | 4 | Most Impactful |
-| 4 | Rebuttal (dispute paralegal) | 5 | 4 | 4 | 3 | 4 | 20 | 3 | PayPal + AI + Bryntum |
-| 12 | Proof of Good (verified donations) | 4 | 4 | 5 | 3 | 4 | 20 | 3 | Most Impactful |
-| 7 | Tollbooth (pay-per-call for agents) | 5 | 3 | 4 | 4 | 3 | 19 | 3 | Agentic Commerce |
-| 9 | Haggle (agent bazaar) | 4 | 4 | 3 | 3 | 5 | 19 | 4 | Most Creative + Channel3 |
-| 5 | Handshake (milestone escrow) | 4 | 4 | 4 | 3 | 4 | 19 | 4 | Bryntum |
-| 6 | Bounty Board (OSS bounties) | 4 | 3 | 4 | 3 | 4 | 18 | 4 | PayPal + AI |
+Scores after the prior-art check:
+
+| # | Idea | Tech | Design | Impact | Innov. | Present. | **Total /25** | Build | Best prize angle |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | **Kameti** (AI savings circles) | 5 | 4 | 5 | 3 | 5 | **22** | 3 | Grand / Most Impactful + Bryntum |
+| 2 | **Leash** (agent spending guardrails) | 5 | 4 | 4 | 3 | 5 | **21** | 3 | Agentic Commerce + AG Grid |
+| 12 | Proof of Good (verified donations) | 4 | 4 | 5 | 3* | 4 | 20 | 3 | Most Impactful |
+| 3 | Earmark (purpose-locked remittance) | 4 | 4 | 5 | 2 | 4 | 19 | 4 | Most Impactful |
+| 4 | Rebuttal (dispute paralegal) | 5 | 4 | 4 | 2 | 4 | 19 | 3 | PayPal + AI + Bryntum |
+| 7 | Tollbooth (pay-per-call for agents) | 5 | 3 | 4 | 3 | 3 | 18 | 3 | Agentic Commerce |
 | 10 | Churn Doctor (SaaS retention) | 4 | 4 | 3 | 3 | 4 | 18 | 4 | AG Grid |
-| 11 | Second Life (resale) | 3 | 4 | 3 | 3 | 4 | 17 | 4 | Channel3 |
+| 5 | Handshake (milestone escrow) | 4 | 4 | 4 | 2 | 4 | 18 | 4 | Bryntum |
+| 8 | Khata (voice credit ledger) | 4 | 4 | 4 | 2 | 4 | 18 | 4 | Most Impactful |
+| 9 | Haggle (agent bazaar) | 4 | 4 | 3 | 2 | 5 | 18 | 4 | Most Creative + Channel3 |
+| 6 | Bounty Board (OSS bounties) | 4 | 3 | 4 | 2 | 4 | 17 | 4 | PayPal + AI |
+| 11 | Second Life (resale) | 3 | 4 | 3 | 1 | 4 | 15 | 4 | Channel3 |
+
+\* The search found nothing for Proof of Good, but it was a single weak query, so treat its 3 as unverified.
+
+## Prior art check (2026-10-21)
+
+Web search for existing products and hackathon projects. **None of the 12 ideas is completely new.** The open gap in most cases is *PayPal/fiat rails + an AI agent that takes real actions*. Most existing AI-payment hackathon projects run on crypto (USDC, Base, Celo, Arc).
+
+| Idea | What already exists | What's still open for us |
+|---|---|---|
+| Kameti | Digital ROSCA apps: [MoneyFellows](https://africa.com/headlines/moneyfellows-innovates-traditional-financial-planning-with-app-revamp) (2.2M users), [ElGameya](https://fintech.global/2025/05/21/egyptian-fintech-elgameya-secures-7-figure-investment-to-scale-digital-rosca-platform/), [Daret](https://www.producthunt.com/posts/daret-2), [ROSCA Money Circle](https://abc30.com/post/rosca-money-circle-app-brings-traditional-saving-method-digital-platform/15571870/). Hackathon AI/crypto versions: [SusuFlow AI](https://www.karmahq.xyz/project/susuflow-ai/about) ("first AI-managed ROSCA", Celo), [Tanda](https://ethglobal.com/showcase/tanda-zt3es) (ETHGlobal winner), [MiTanda](https://devfolio.co/projects/mitanda-c789), [Civitas](https://contra.com/p/l7YslmYc-title-civitas-digitizing-community-savings) (AI trust score) | Existing apps do reminders and history, and SusuFlow's agent sends reminders. **An agent that resolves failures (swaps, catch-up invoices, mediation) on PayPal fiat rails** was not found |
+| Leash | [Sardis](https://pypi.org/project/sardis/) (natural-language spending rules), Veyra, [imprest](https://glama.ai/mcp/servers/Theoddalex/imprest), [Amazon Bedrock AgentCore payments](https://aihub.hkuspace.hku.hk/2026/06/02/enable-safe-agentic-payments-with-built-in-guardrails-using-amazon-bedrock-agentcore-payments/), [Privacy cards](https://privacy.com/blog/payment-solutions-ai-agents-2026-compared), plus Visa, Mastercard and Coinbase agent payments | Mostly crypto or card-based. PayPal's [Agent Ready](https://www.digitalcommerce360.com/2025/10/28/paypal-agentic-commerce-ai-driven-shopping-services/) is merchant-side; **no user-facing spending-policy layer on PayPal** was found |
+| Earmark | **[Xoom bill pay](https://help.xoom.com/s/article/how-to-pay-bills)**, PayPal's own product, already pays utility, phone and insurance bills abroad. [WorldRemit](https://www.fintechfutures.com/paytech/worldremit-teams-up-with-paykii) and Western Union too | Tuition and medical bills with AI document verification. **Risky, because the judges own Xoom** |
+| Rebuttal | [Chargeflow](https://www.chargeflow.io/integrations/paypal) ("recover 90% of PayPal disputes", Autopilot), [Justt](https://thepaypers.com/fraud-and-fincrime/news/justt-upgrades-ai-chargeback-management) | Very little. It's a funded, mature category |
+| Handshake | [WorkProof](https://hackquest.io/en/projects/WorkProof), [Circle Arc escrow sample](https://docs.arc.io/build/sample-apps/arc-escrow) (AI checks acceptance criteria), [Receipt](https://github.com/mimisco-git/receipt), [TaskLoop](https://ethglobal.com/showcase/taskloop-oim40). All crypto | A PayPal authorize/capture version |
+| Bounty Board | [Algora](https://algora.io/pricing) (pay on merge, auto-pay) | AI review of the PR before paying |
+| Tollbooth | Many x402 pay-per-call MCP servers ([thirdweb](https://portal.thirdweb.com/x402/agents), mcp-x402, Agenticpay). All USDC | A PayPal-rails version |
+| Khata | [Khatabook](https://ameya.substack.com/p/how-khatabook-became-the-premier), [OkCredit](https://okcredit.in/en/) (10M+ downloads, reminders with payment links) | Voice entry plus PayPal invoices for diaspora shops. Small gap |
+| Haggle | [ArcAgent](https://lablab.ai/submissions/wd11ehxobo7w5kq2qi7mnh9s) (hackathon), [Klodi](https://hunted.space/product/klodi), [arXiv research](https://arxiv.org/html/2506.00073v4) | A PayPal settlement version |
+| Churn Doctor | [Churnkey, ProsperStack](https://prosperstack.com/compare/prosperstack-vs-churnkey/), both Stripe-centric | **PayPal Subscriptions support looks like a real gap** |
+| Second Life | [eBay's photo-to-listing](https://voicebot.ai/2023/09/07/ebay-unveils-new-ai-powered-tool-to-generate-listings-from-product-photos/), FlowLister, 3Dsellers | Almost nothing |
+| Proof of Good | Nothing found (weak search) | Unverified |
+
+Devpost's gallery for this hackathon isn't published yet, so we can't see what other entrants are building.
 
 ## Recommendation
 
-**Build Kameti.** It does best on the criteria that are hardest to fake:
-- **Innovation:** no PayPal example or sponsor list mentions savings circles, and they're unfamiliar to most Western builders, so few duplicates are likely.
-- **Impact:** a real practice used by about a billion people, with known, specific failure points.
-- **Presentation:** it has a human story, especially if the builder has grown up with committees.
-- **Tech:** it needs Subscriptions, Payouts, Invoicing, Webhooks and Transaction Search working together, plus an agent that actually takes actions.
+**Kameti is still the top pick, but the pitch has to change.** "Nobody has digitized savings circles" is false. The honest, defensible claim is:
 
-**Leash is the backup.** It's a stronger fit for the Agentic Commerce award and the AG Grid prize, but it sits in a more crowded space.
+> Savings-circle apps track who paid. Kameti's AI agent does the organizer's *hard* job, handling missed payments, swapping payout turns and mediating disputes, and every dollar moves on PayPal's real-world rails, not crypto.
+
+- **Impact:** a real practice used by about a billion people. Canada's newcomer communities are a specific, credible audience.
+- **Presentation:** a strong human story.
+- **Tech:** Subscriptions, Payouts, Invoicing, Webhooks and Transaction Search working together, plus an agent that acts.
+- **Innovation is the weak point (3/5).** The demo has to show the agent *resolving* a failure, not just sending reminders.
+
+**Leash is the backup.** It's a stronger fit for the Agentic Commerce award and the AG Grid prize, but it's crowded with crypto and card players. Its open angle is a spending-policy layer on PayPal specifically.
+
+**Drop:** Earmark (PayPal's own Xoom does it), Rebuttal (Chargeflow and Justt), Second Life (eBay).
 
 Ideas can be combined. For example, Kameti's member trust score could become a Leash-style spending policy later. Keep the submitted scope to **one sharp story**.
 
@@ -192,7 +238,7 @@ Ideas can be combined. For example, Kameti's member trust score could become a L
 ## Open questions for the team
 
 1. Which idea, or which combination?
-2. Solo or team? How many people, with which skills (frontend, backend, design, video)?
+2. ~~Solo or team?~~ **Solo** (decided 2026-10-21). Keep scope tight: one core flow end to end, sponsor component only if cheap, stretch features last.
 3. Which sponsor prize do we target? It decides whether we use AG Grid, Bryntum or Channel3.
 4. Hosting: hosted demo on Render (best for judges) or local run instructions only?
 5. Can you create a PayPal developer account from where you live? If not, ask on the PayPal Discord now; that's the critical path.

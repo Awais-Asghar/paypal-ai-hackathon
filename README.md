@@ -2,7 +2,7 @@
 
 **A pause between "send" and "gone."** SureSend protects people from scams where *they* are tricked into sending money (voice-clone "grandson in trouble" calls, fake CRA threats, romance and tech-support scams). The payment is **held through PayPal**, not sent, until an AI check-in and the person's trusted family confirm it's safe. If it's a scam, the hold is voided and the money never leaves.
 
-> 🚧 In development for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (deadline Nov 12, 2026). Setup instructions, the hosted demo link and the demo video will appear here.
+> In development for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (deadline Nov 12, 2026). Setup instructions, the hosted demo link and the demo video will appear here.
 
 ## How it works (short version)
 

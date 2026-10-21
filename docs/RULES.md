@@ -59,7 +59,13 @@ Everything below needs permission first:
 5. The demo video stays **under 3 minutes**, runs on YouTube, contains no third-party trademarks or copyrighted music without permission, and is in English.
 6. Respect each third-party API's terms (Channel3, AG Grid trial license, Bryntum trial, etc.).
 
-## 7. Working style
+## 7. Writing style
+
+1. **No emojis** anywhere: docs, code comments, commit messages, UI copy, chat replies, the Devpost text and the video captions.
+2. **No em dashes (—).** Use a comma, colon, period or parentheses instead. Hyphens in compound words (`sign-in`) and en dashes in ranges (`Oct 21–23`) are fine.
+3. Plain status words instead of symbols in prose: "Done", "Failed", "Pending". The sandbox check script's ✓ and ✗ output markers are plain text symbols, not emojis, and may stay.
+
+## 8. Working style
 
 1. Read [CLAUDE.md](../CLAUDE.md), [ARCHITECTURE.md](ARCHITECTURE.md) and this file before starting work.
 2. Ask when requirements are ambiguous instead of guessing on anything hard to undo.

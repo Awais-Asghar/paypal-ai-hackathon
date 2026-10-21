@@ -71,7 +71,9 @@ async function api(method, path, { body, headers = {}, token } = {}) {
 
 function describeError(r) {
   const j = r.json || {};
-  const detail = j.details?.map((d) => `${d.issue}${d.description ? `: ${d.description}` : ""}`).join("; ");
+  const detail = j.details
+    ?.map((d) => `${d.field ? `${d.field} ` : ""}${d.issue}${d.description && d.description !== d.issue ? `: ${d.description}` : ""}`)
+    .join("; ");
   return `${r.status} ${j.name || j.error || ""} ${j.message || j.error_description || ""}${detail ? ` [${detail}]` : ""} (debug id ${r.debugId})`;
 }
 
@@ -133,7 +135,7 @@ async function checkPayouts() {
   const r = await api("POST", "/v1/payments/payouts", {
     body: {
       sender_batch_header: { sender_batch_id: `holdon-check-${Date.now()}`, email_subject: "HoldOn sandbox payout check" },
-      items: [{ recipient_type: "EMAIL", receiver, amount: { value: "1.00", currency_code: CURRENCY }, note: "HoldOn feasibility check", sender_item_id: "check-1" }],
+      items: [{ recipient_type: "EMAIL", receiver, amount: { value: "1.00", currency: CURRENCY }, note: "HoldOn feasibility check", sender_item_id: "check-1" }],
     },
   });
   if (!r.ok) { console.log(`✗ Payouts create: ${describeError(r)}`); return; }

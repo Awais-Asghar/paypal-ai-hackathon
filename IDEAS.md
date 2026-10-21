@@ -77,6 +77,12 @@ The first draft scored Innovation without researching existing products. After a
 - Deepfake defence today is [family codewords and callbacks](https://staysafeonline.org/articles/when-scammers-call-grandma). **No app found** verifies the "family member" through their own payment identity.
 - **What's new here:** (a) the money is actually *held* through PayPal authorization, not just flagged; (b) Log In with PayPal as anti-deepfake identity proof; (c) open to anyone on PayPal, not one bank's customers.
 
+**Rules against scammer counter-moves** (for example "I don't have my phone, send it to this other account"):
+1. **Never trust caller-supplied contact details.** Verification goes only to the contact details the family saved at setup. The real person can verify from any device by logging in with PayPal.
+2. **Pay only the verified person.** If the stated purpose is "for Ali", the payout can go *only* to Ali's verified PayPal account. Any other recipient is a mismatch and an automatic high-risk flag.
+3. **Fail safe: when in doubt, wait.** If the person can't be reached, the funds stay held and a second trusted contact is asked. HoldOn suggests calling the hospital or police station on a number it looks up itself, never one the caller gave.
+4. **Scam phrases raise risk, they don't unlock money.** "No phone", "different account", "don't tell anyone", "urgent" and "gift cards/crypto" all increase the risk score.
+
 **Risks:**
 - Log In with PayPal must be enabled on the sandbox app with a return URL, and Payouts must be enabled. **Verify in week 1.**
 - Authorizations have a 3-day honor period, which is fine for a 24h cooling-off.

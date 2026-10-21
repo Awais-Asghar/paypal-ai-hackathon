@@ -30,9 +30,9 @@
 │    conversation · screenshot (vision) ·         rules (hard red flags) + LLM structured verdict      │
 │    voicemail transcript · family summary        → LOW / MEDIUM / HIGH + reasons                      │
 │                                                                                                      │
-│  Identity Verifier                             Scheduler (Render cron/Workflows)                    │
-│    Log In with PayPal (OIDC) → match the        cooling-off expiry · authorization expiry           │
-│    saved family-circle record                    (auto-void before the 3-day honor period ends)     │
+│  Identity Verifier                             Scheduler (Render cron/Workflows)                     │
+│    Log In with PayPal (OIDC) → match the        cooling-off expiry · authorization expiry            │
+│    saved family-circle record                    (auto-void before the 3-day honor period ends)      │
 │                                                                                                      │
 │  Webhook receiver: verify signature → idempotent handler → update state → push UI update (SSE)       │
 └───────┬───────────────────────────────────────────────┬──────────────────────────────────────────────┘

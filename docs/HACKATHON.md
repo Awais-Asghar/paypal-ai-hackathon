@@ -109,4 +109,4 @@ Judging can include expert panels, peer review or "automated AI-driven analysis"
 - **Consumer:** auto-categorized budgeting; request-money inside chat; simpler checkout for students, families or seniors.
 - **Social impact:** accessible donation platform; microloans for the underbanked; recurring nonprofit payouts to field partners; neighbourhood money pools (solar co-op, cleanup fund).
 
-AG Grid and Bryntum publish their own idea lists too (nudge-bot for unpaid invoices, anomaly alerts, dispute triage board, payment-gated rental calendar). Expect duplicates of all of these. Ideas in [IDEAS.md](../IDEAS.md) are chosen to stand apart from them.
+AG Grid and Bryntum publish their own idea lists too (nudge-bot for unpaid invoices, anomaly alerts, dispute triage board, payment-gated rental calendar). Expect duplicates of all of these. Our project, [HoldOn](PROJECT.md), was chosen to stand apart from them.

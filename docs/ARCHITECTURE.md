@@ -1,6 +1,6 @@
 # Architecture & Project Plan: HoldOn
 
-> **Status:** idea chosen (2026-10-21); week-1 sandbox feasibility checks next. Product spec: [IDEAS.md](IDEAS.md). Demo plan: [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md).
+> **Status:** idea chosen (2026-10-21); week-1 sandbox feasibility checks next. Product spec: [PROJECT.md](PROJECT.md). Demo plan: [DEMO_PLAN.md](DEMO_PLAN.md). Sandbox setup: [PAYPAL_SETUP.md](PAYPAL_SETUP.md).
 
 ## Chosen project
 
@@ -115,7 +115,7 @@ Models: `claude-sonnet-5-5` for the conversation loop; `claude-opus-5-5` for the
 
 ## Environment variables
 
-See [.env.example](.env.example). Secrets stay in `.env` locally and in Render environment variables in production, never in git.
+See [.env.example](../.env.example). Secrets stay in `.env` locally and in Render environment variables in production, never in git.
 
 ## Timeline (Oct 21 → Nov 12, 12:00 pm PT)
 

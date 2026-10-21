@@ -1,10 +1,10 @@
-# HoldOn: a circuit breaker for scam payments
+# Project: HoldOn, a circuit breaker for scam payments
 
-**Chosen project** for the PayPal AI Hackathon (decided 2026-10-21). Deadline: **Nov 12, 2026, 12:00 pm PT**. Solo build.
+Our entry for the PayPal AI Hackathon (chosen 2026-10-21). Deadline: **Nov 12, 2026, 12:00 pm PT**. Solo build.
 
-This is the only idea we're pursuing. The earlier brainstorm (12 other ideas, the scoring rubric and the prior-art research) was removed at the owner's request. It's still in git history: `git show 4260579:IDEAS.md`.
+Related docs: [ARCHITECTURE.md](ARCHITECTURE.md) (how it's built) · [DEMO_PLAN.md](DEMO_PLAN.md) (video and judge access) · [HACKATHON.md](HACKATHON.md) (rules and judging) · [PAYPAL_SETUP.md](PAYPAL_SETUP.md) (sandbox setup).
 
-Related docs: [ARCHITECTURE.md](ARCHITECTURE.md) (how it's built) · [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md) (video and judge access) · [docs/HACKATHON.md](docs/HACKATHON.md) (rules and judging).
+The earlier brainstorm of 12 other ideas is in git history only: `git show 4260579:IDEAS.md`.
 
 
 > Bank fraud systems stop strangers from stealing your money. Nothing stops *you* from sending it to a scammer yourself. HoldOn puts a pause between "send" and "gone": the money is held, not moved, until an AI check and the people you trust say it's safe.
@@ -72,7 +72,7 @@ Related docs: [ARCHITECTURE.md](ARCHITECTURE.md) (how it's built) · [docs/DEMO_
 
 ## Week-1 feasibility checks
 
-Run with `scripts/sandbox-check.mjs` (see the README in `scripts/`).
+Run with [`scripts/sandbox-check.mjs`](../scripts/sandbox-check.mjs). Setup steps are in [PAYPAL_SETUP.md](PAYPAL_SETUP.md).
 
 - [ ] Sandbox business account (HoldOn platform) plus two personal accounts ("Nana", "Ali") created in the same country; Transaction Search enabled on the app
 - [ ] Access token from client credentials

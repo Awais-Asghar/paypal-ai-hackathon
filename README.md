@@ -13,13 +13,13 @@
 
 ## Documents
 
-- [IDEAS.md](IDEAS.md): product spec, prior art, scoring
-- [ARCHITECTURE.md](ARCHITECTURE.md): architecture, money flow, safety rules, timeline
+- [docs/PROJECT.md](docs/PROJECT.md): what HoldOn is, the problem, how it works, prior art
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): architecture, money flow, safety rules, timeline
 - [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md): demo video script and judge access plan
+- [docs/PAYPAL_SETUP.md](docs/PAYPAL_SETUP.md): PayPal developer account and sandbox setup
 - [docs/HACKATHON.md](docs/HACKATHON.md): hackathon requirements, judging, prizes
 - [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): official webinar transcripts
-- [scripts/README.md](scripts/README.md): PayPal sandbox feasibility checks
-- [RULES.md](RULES.md) / [CLAUDE.md](CLAUDE.md): contributor and AI-agent rules
+- [docs/RULES.md](docs/RULES.md) / [CLAUDE.md](CLAUDE.md): contributor and AI-agent rules
 
 ## License
 

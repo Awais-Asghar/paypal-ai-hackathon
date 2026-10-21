@@ -61,7 +61,7 @@ Everything below needs permission first:
 
 ## 7. Working style
 
-1. Read [CLAUDE.md](CLAUDE.md), [ARCHITECTURE.md](ARCHITECTURE.md) and this file before starting work.
+1. Read [CLAUDE.md](../CLAUDE.md), [ARCHITECTURE.md](ARCHITECTURE.md) and this file before starting work.
 2. Ask when requirements are ambiguous instead of guessing on anything hard to undo.
 3. Report outcomes honestly. If tests fail or a step was skipped, say so.
 4. Adding project dependencies is allowed. Mention each new dependency and why. Don't install global system tools without asking.

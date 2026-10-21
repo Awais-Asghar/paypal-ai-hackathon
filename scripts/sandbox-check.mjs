@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Week-1 feasibility checks for HoldOn against the PayPal sandbox.
+// Week-1 feasibility checks for HoldOn against the PayPal sandbox. Setup: docs/PAYPAL_SETUP.md
 // Usage: node --env-file=.env scripts/sandbox-check.mjs <command>
 // Commands: token | search | webhooks | payouts | authorize [capture] | login | all
 // Never prints secrets or access tokens.
@@ -26,7 +26,7 @@ function abort(msg) {
 }
 
 if (!BASE.includes("sandbox")) {
-  abort("PAYPAL_BASE_URL is not a sandbox URL. HoldOn checks run against the sandbox only (RULES.md §4).");
+  abort("PAYPAL_BASE_URL is not a sandbox URL. HoldOn checks run against the sandbox only (docs/RULES.md §4).");
 }
 if (!CLIENT_ID || !CLIENT_SECRET) {
   abort("Missing PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET. Copy .env.example to .env and fill them in.");

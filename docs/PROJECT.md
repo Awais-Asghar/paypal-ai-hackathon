@@ -74,10 +74,11 @@ The earlier brainstorm of 12 other ideas is in git history only: `git show 42605
 
 Run with [`scripts/sandbox-check.mjs`](../scripts/sandbox-check.mjs). Setup steps are in [PAYPAL_SETUP.md](PAYPAL_SETUP.md).
 
-- [ ] Sandbox business account (SureSend platform) plus personal accounts Margaret Collins ("Nana"), Ethan Collins and Robert Hayes (landlord), all in Canada (CAD); Transaction Search enabled on the app
-- [ ] Access token from client credentials
-- [ ] Order with `intent=AUTHORIZE` → buyer approves → authorize → **void** (and separately → **capture**)
-- [ ] Payouts from the business account to a personal sandbox account
+- [x] Sandbox business account (SureSend Demo) plus personal accounts Margaret Collins ("Nana"), Ethan Collins and Robert Hayes (landlord), all in Canada (CAD) (2026-10-21)
+- [x] Access token from client credentials (2026-10-21)
+- [x] Order with `intent=AUTHORIZE` → Margaret approves → authorize → **void**: authorization `9UK966797J1895949` CREATED → VOIDED, 25.00 CAD (2026-10-21). Authorizations expire after 29 days
+- [ ] Authorize → **capture** (same flow, `authorize capture`)
+- [x] Payouts from the business account to a personal sandbox account: batch `W3YARBZK4AA2Q` SUCCESS, 1.00 CAD to Ethan (2026-10-21). Note: the Payouts amount field is `currency`, not `currency_code`
 - [ ] Log In with PayPal enabled on the app; code exchange + userinfo returns a stable PayPal user ID/email
 - [ ] Transaction Search returns data
 - [ ] Webhook delivery through a tunnel (ngrok/Cloudflare) with signature verification

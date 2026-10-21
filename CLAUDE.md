@@ -31,6 +31,9 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - **Before writing PayPal code**, use the PayPal AI Toolkit skill (`paypal-best-practices`) and/or the APIMatic Context Plugin. Don't rely on memory of PayPal APIs, because older v1 patterns are deprecated.
   - Using the APIMatic plugin also qualifies the project for the APIMatic prize. Note when it was used.
 - For any other library or SDK docs, use Context7.
+- **Database work** (tables, column types, migrations, indexes, queries): load the `supabase-postgres-best-practices` skill first. It applies to any Postgres, including our PGlite and Render Postgres. `postgresql-best-practices` (Microsoft) is a secondary reference; ignore its Azure-only sections.
+- **Drizzle ORM:** use Context7 for current docs. No Drizzle skill is installed on purpose.
+- **Next.js:** follow the `AGENTS.md` / `CLAUDE.md` rules that `next dev` generates (Next.js 16.3+) and the bundled docs in `node_modules/next/dist/docs/`; `vercel-react-best-practices` covers React patterns.
 - Keep the agent's money-moving actions behind one policy/approval gate, with an idempotency key (`PayPal-Request-Id`) and an audit log (see docs/ARCHITECTURE.md safety rules).
 - Webhooks are the source of truth for payment state. Always verify webhook signatures.
 - Make the demo deterministic: seed scripts plus a "simulate next event" control.

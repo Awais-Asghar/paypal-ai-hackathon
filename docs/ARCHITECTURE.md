@@ -92,7 +92,7 @@ Nana taps "Send $2,500 to Ethan"
 - **Groq** (free) for voicemail transcription (Whisper) and as a fallback model when Gemini is rate-limited.
 - Anthropic Claude stays supported as an option.
 
-The exact model IDs are pinned in config after checking the provider's current model list. The safety rules above are enforced in code, so a smaller free model can't weaken them. Demo scenarios keep a cached fallback so the hosted demo still plays if the free tier is rate-limited.
+Verified 2026-10-21 on the free tiers: `gemini-3.8-flash` (JSON-schema output worked, rated the grandparent-scam test HIGH; latency on the free tier needs measuring), Groq `openai/gpt-oss-120b` (chat), `whisper-large-v3-turbo` (speech-to-text) and `llama-prompt-guard-2` (prompt-injection screening for scam text and screenshots). Groq has no vision model, so images go to Gemini. Model IDs live in `.env` (`GEMINI_MODEL`, `GROQ_CHAT_MODEL`, `GROQ_STT_MODEL`); `gemini-2.5-flash` is retired for new users. The safety rules above are enforced in code, so a smaller free model can't weaken them. Demo scenarios keep a cached fallback so the hosted demo still plays if the free tier is rate-limited.
 
 ## Data model (first cut)
 

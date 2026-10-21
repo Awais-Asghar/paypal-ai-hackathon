@@ -79,7 +79,7 @@ Run with [`scripts/sandbox-check.mjs`](../scripts/sandbox-check.mjs). Setup step
 - [x] Order with `intent=AUTHORIZE` → Margaret approves → authorize → **void**: authorization `9UK966797J1895949` CREATED → VOIDED, 25.00 CAD (2026-10-21). Authorizations expire after 29 days
 - [ ] Authorize → **capture** (same flow, `authorize capture`)
 - [x] Payouts from the business account to a personal sandbox account: batch `W3YARBZK4AA2Q` SUCCESS, 1.00 CAD to Ethan (2026-10-21). Note: the Payouts amount field is `currency`, not `currency_code`
-- [ ] Log In with PayPal enabled on the app; code exchange + userinfo returns a stable PayPal user ID/email
+- [x] Log In with PayPal enabled on the app; code exchange + userinfo returns a stable PayPal user ID/email: Ethan logged in, `payer_id` SMLTYXGPGSUYC, email matched (2026-10-21). Return URL must be `http://127.0.0.1:3000/callback`; `verified_account` is not returned in sandbox, so match on `payer_id`
 - [x] Transaction Search returns data (2026-10-21, after requesting a fresh token with `ignoreCache=true`)
 - [ ] Webhook delivery through a tunnel (ngrok/Cloudflare) with signature verification
 - [ ] PayPal AI Toolkit and APIMatic Context Plugin installed in Claude Code

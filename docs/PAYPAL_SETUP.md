@@ -18,22 +18,21 @@ Step-by-step setup for HoldOn. Takes about 15–20 minutes plus a 10–15 minute
 
 ## Step 3: Create the test accounts for HoldOn
 
-HoldOn needs three sandbox accounts, all in the **same country**. We recommend **United States / USD** for all three: PayPal's docs say testing outside the US can need a business account, and the money is fake anyway.
+HoldOn needs four sandbox accounts, **all in Canada (CAD)**, which matches our Canadian story (CAFC fraud data, fake CRA calls). Don't mix countries. If a check fails because of the country, we'll add a US set as a fallback.
 
-Go to **Testing Tools → Sandbox Accounts → Create account** and create:
+Go to **Testing Tools → Sandbox Accounts → Create account**. Use the **default** dialog: it generates the email and password for you. The "custom account" form needs an email and password typed in. Create:
 
-| Account | Type | Country | Used as |
-|---|---|---|---|
-| **HoldOn Platform** | Business | United States | The HoldOn app that holds and releases money |
-| **Nana** | Personal | United States | The person being protected (pays) |
-| **Ali** | Personal | United States | The real grandson (verifies, receives) |
+| Account | Type | Country | Name (set after creating) | Used as |
+|---|---|---|---|---|
+| Platform | Business | Canada | **HoldOn Demo** | The HoldOn app that holds and releases money |
+| Grandma | Personal | Canada | **Margaret Collins** ("Nana") | The person being protected (pays) |
+| Grandson | Personal | Canada | **Ethan Collins** | The real grandson (verifies, receives) |
+| Landlord | Personal | Canada | **Robert Hayes** | Known payee for the "normal rent payment" scene |
 
 For each one, open the **⋯ menu → View/Edit account**, then:
-- **Profile:** set the name (Nana, Ali), so the name shows up on transactions;
-- **Funding:** give Nana a big balance, for example 5,000 USD;
+- **Profile:** set the name above, so it shows up on transactions;
+- **Funding:** give Margaret a big balance, for example 5,000 CAD;
 - note down each account's **email** and **password**. You'll use them to log in during tests.
-
-> Using Canada instead? Make all three accounts Canada and set `PAYPAL_CURRENCY=CAD` in `.env`. Don't mix countries.
 
 ## Step 4: Create the HoldOn app (this gives you the API keys)
 
@@ -63,9 +62,10 @@ Click **Save Changes**, then **wait 10–15 minutes**. Feature changes take a wh
    ```
    PAYPAL_CLIENT_ID=<Client ID from Step 4>
    PAYPAL_CLIENT_SECRET=<Secret from Step 4>
-   PAYPAL_CURRENCY=USD
-   SANDBOX_NANA_EMAIL=<Nana's sandbox email>
-   SANDBOX_ALI_EMAIL=<Ali's sandbox email>
+   PAYPAL_CURRENCY=CAD
+   SANDBOX_MARGARET_EMAIL=<Margaret's sandbox email>
+   SANDBOX_ETHAN_EMAIL=<Ethan's sandbox email>
+   SANDBOX_ROBERT_EMAIL=<Robert's sandbox email>
    ```
 3. `.env` is git-ignored, so it never gets committed. Don't paste these values anywhere else.
 
@@ -81,8 +81,8 @@ node --env-file=.env scripts/sandbox-check.mjs login             # Log In with P
 ```
 
 For `authorize` and `login`, the script prints a link and waits on `localhost:3000`:
-- `authorize`: log in as **Nana** and approve;
-- `login`: log in as **Ali**.
+- `authorize`: log in as **Margaret** and approve;
+- `login`: log in as **Ethan**.
 
 Each line starts with ✓ (works) or ✗ (problem, with the fix). The script only works with the sandbox and never prints your secret.
 
@@ -100,6 +100,6 @@ In Claude Code:
 | `✗ scope for Payouts / Transaction Search missing` | Turn the feature on in Step 5 and wait 10–15 minutes |
 | `NOT_AUTHORIZED` on Transaction Search | The feature isn't enabled yet, or is still propagating. Wait and retry |
 | Login link shows "invalid redirect_uri" | The return URL in Step 5 must be exactly `http://localhost:3000/callback` |
-| Payout `DENIED` or stuck | Check that `SANDBOX_ALI_EMAIL` is a sandbox **personal** account and the currency matches the accounts' country |
+| Payout `DENIED` or stuck | Check that `SANDBOX_ETHAN_EMAIL` is a sandbox **personal** account and the currency matches the accounts' country |
 | Can't create a PayPal account in your country | Ask in the PayPal Discord: https://discord.gg/sJ2G6DyvSK |
 | Token works in the morning, then 401 later | Tokens expire after about 8–9 hours. The script fetches a new one each run; in the AI Toolkit use `/paypal:setup refresh` |

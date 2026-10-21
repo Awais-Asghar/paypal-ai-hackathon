@@ -10,7 +10,7 @@ import { randomUUID } from "node:crypto";
 const BASE = process.env.PAYPAL_BASE_URL || "https://api-m.sandbox.paypal.com";
 const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
-const CURRENCY = process.env.PAYPAL_CURRENCY || "USD";
+const CURRENCY = process.env.PAYPAL_CURRENCY || "CAD";
 const REDIRECT_URI = process.env.PAYPAL_LOGIN_REDIRECT_URI || "http://localhost:3000/callback";
 const WEB_BASE = BASE.includes("sandbox") ? "https://www.sandbox.paypal.com" : "https://www.paypal.com";
 
@@ -128,8 +128,8 @@ async function checkWebhooks() {
 }
 
 async function checkPayouts() {
-  const receiver = process.env.SANDBOX_ALI_EMAIL;
-  if (!receiver) { console.log("✗ Payouts: set SANDBOX_ALI_EMAIL to a sandbox personal account email"); return; }
+  const receiver = process.env.SANDBOX_ETHAN_EMAIL;
+  if (!receiver) { console.log("✗ Payouts: set SANDBOX_ETHAN_EMAIL to a sandbox personal account email"); return; }
   const r = await api("POST", "/v1/payments/payouts", {
     body: {
       sender_batch_header: { sender_batch_id: `holdon-check-${Date.now()}`, email_subject: "HoldOn sandbox payout check" },
@@ -172,7 +172,7 @@ async function checkAuthorize(finish = "void") {
   const orderId = r.json.id;
   const approve = r.json.links.find((l) => l.rel === "payer-action" || l.rel === "approve")?.href;
   ok(`Order ${orderId} created with intent=AUTHORIZE`);
-  console.log(`\n  Open this link and approve as the sandbox PERSONAL account ("Nana"):\n  ${approve}\n`);
+  console.log(`\n  Open this link and approve as the sandbox PERSONAL account ("Margaret"):\n  ${approve}\n`);
 
   const params = await waitForRedirect(returnPath);
   if (params.get("cancelled")) fail("Buyer cancelled the approval");
@@ -204,7 +204,7 @@ async function checkLogin() {
     redirect_uri: REDIRECT_URI,
     state,
   });
-  console.log(`\n  Open this link and log in as the sandbox PERSONAL account ("Ali"):\n  ${WEB_BASE}/signin/authorize?${q}\n`);
+  console.log(`\n  Open this link and log in as the sandbox PERSONAL account ("Ethan"):\n  ${WEB_BASE}/signin/authorize?${q}\n`);
   info(`(Requires "Log in with PayPal" enabled on the app with return URL ${REDIRECT_URI})`);
 
   const params = await waitForRedirect(callbackPath);
@@ -228,8 +228,8 @@ async function checkLogin() {
   info(`payer_id: ${u.json.payer_id ?? "(not returned; paypalattributes scope may be off)"}`);
   info(`email: ${email ?? "(not returned)"}`);
   info(`verified_account: ${u.json.verified_account ?? "(not returned)"}`);
-  const expected = process.env.SANDBOX_ALI_EMAIL;
-  if (expected && email) console.log(`${email.toLowerCase() === expected.toLowerCase() ? "✓" : "✗"} matches SANDBOX_ALI_EMAIL`);
+  const expected = process.env.SANDBOX_ETHAN_EMAIL;
+  if (expected && email) console.log(`${email.toLowerCase() === expected.toLowerCase() ? "✓" : "✗"} matches SANDBOX_ETHAN_EMAIL`);
 }
 
 const [cmd = "all", arg] = process.argv.slice(2);

@@ -42,7 +42,7 @@ The earlier brainstorm of 12 other ideas is in git history only: `git show 42605
 1. A stat and a voice-clone "grandson" call, cloned from *our own* voice with a disclosure on screen.
 2. Nana taps send for $2,500. The PayPal sandbox shows an authorization, and her balance hasn't moved.
 3. The AI check-in spots *secrecy + urgency + bail + new number*.
-4. A "Is this really Ali?" link goes out. The real Ali logs in with PayPal and replies "I'm fine, I'm at class."
+4. A "Is this really Ethan?" link goes out. The real Ethan logs in with PayPal and replies "I'm fine, I'm at class."
 5. The authorization is **voided**, and the dashboard shows "$2,500 kept safe."
 6. Finally, a normal rent payment to a known payee goes through instantly, which proves it doesn't get in the way of everyday life.
 
@@ -55,7 +55,7 @@ The earlier brainstorm of 12 other ideas is in git history only: `git show 42605
 
 **Rules against scammer counter-moves** (for example "I don't have my phone, send it to this other account"):
 1. **Never trust caller-supplied contact details.** Verification goes only to the contact details the family saved at setup. The real person can verify from any device by logging in with PayPal.
-2. **Pay only the verified person.** If the stated purpose is "for Ali", the payout can go *only* to Ali's verified PayPal account. Any other recipient is a mismatch and an automatic high-risk flag.
+2. **Pay only the verified person.** If the stated purpose is "for Ethan", the payout can go *only* to Ethan's verified PayPal account. Any other recipient is a mismatch and an automatic high-risk flag.
 3. **Fail safe: when in doubt, wait.** If the person can't be reached, the funds stay held and a second trusted contact is asked. HoldOn suggests calling the hospital or police station on a number it looks up itself, never one the caller gave.
 4. **Scam phrases raise risk, they don't unlock money.** "No phone", "different account", "don't tell anyone", "urgent" and "gift cards/crypto" all increase the risk score.
 
@@ -74,7 +74,7 @@ The earlier brainstorm of 12 other ideas is in git history only: `git show 42605
 
 Run with [`scripts/sandbox-check.mjs`](../scripts/sandbox-check.mjs). Setup steps are in [PAYPAL_SETUP.md](PAYPAL_SETUP.md).
 
-- [ ] Sandbox business account (HoldOn platform) plus two personal accounts ("Nana", "Ali") created in the same country; Transaction Search enabled on the app
+- [ ] Sandbox business account (HoldOn platform) plus personal accounts Margaret Collins ("Nana"), Ethan Collins and Robert Hayes (landlord), all in Canada (CAD); Transaction Search enabled on the app
 - [ ] Access token from client credentials
 - [ ] Order with `intent=AUTHORIZE` → buyer approves → authorize → **void** (and separately → **capture**)
 - [ ] Payouts from the business account to a personal sandbox account

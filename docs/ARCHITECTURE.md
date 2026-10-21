@@ -17,7 +17,7 @@
 ## System overview
 
 ```
- Nana's phone (web app)          Ali's phone (web app)             Family dashboard
+ Nana's phone (web app)          Ethan's phone (web app)           Family dashboard
  send · check-in chat            "Is this really you?" link        decisions · history
         │                                │                                │
         ▼                                ▼                                ▼
@@ -48,7 +48,7 @@
 ## Money flow
 
 ```
-Nana taps "Send $2,500 to Ali"
+Nana taps "Send $2,500 to Ethan"
   │
   ├─► POST /v2/checkout/orders  {intent: AUTHORIZE, amount, custom_id: hold_id}  ──► Nana approves in PayPal popup (JS SDK)
   ├─► POST /v2/checkout/orders/{id}/authorize   → authorization CREATED (funds reserved, NOT moved)   [state: HELD]
@@ -104,7 +104,7 @@ Models: `claude-sonnet-5-5` for the conversation loop; `claude-opus-5-5` for the
 
 | Layer | Choice |
 |---|---|
-| Frontend | Next.js (App Router) + React + Tailwind, phone-first layouts for Nana/Ali |
+| Frontend | Next.js (App Router) + React + Tailwind, phone-first layouts for Nana/Ethan |
 | Payments UI | PayPal JS SDK (v6) for buyer approval |
 | Backend | Next.js route handlers (TypeScript); REST calls to PayPal (Orders, Payments, Payouts, Identity, Reporting) |
 | AI | Anthropic Claude API (tool use + structured output); speech-to-text for voicemail |

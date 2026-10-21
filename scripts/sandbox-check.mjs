@@ -43,7 +43,8 @@ async function appToken() {
   const res = await fetch(`${BASE}/v1/oauth2/token`, {
     method: "POST",
     headers: { Authorization: basicAuth, "Content-Type": "application/x-www-form-urlencoded" },
-    body: "grant_type=client_credentials",
+    // ignoreCache: PayPal otherwise returns the cached token, which lacks scopes for features enabled since it was issued
+    body: "grant_type=client_credentials&ignoreCache=true",
   });
   const body = await res.json();
   if (!res.ok) fail(`Token request failed (${res.status}): ${body.error_description || JSON.stringify(body)}`);

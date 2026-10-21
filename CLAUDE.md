@@ -43,6 +43,8 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - OAuth tokens expire after about 8–9 hours. Cache them and refresh on 401. For the AI Toolkit MCP use `/paypal:setup refresh`.
 - Business sandbox account = merchant (receives). Personal sandbox account = buyer (pays). Create both **in the same country**.
 - Enable **Transaction Search** in the app settings. Settings changes take 10–15 minutes.
+- **Cached tokens keep old scopes.** PayPal returns the same access token until it expires, so a feature enabled later won't appear in it. Request tokens with `grant_type=client_credentials&ignoreCache=true` after changing app features.
+- The Payouts amount field is `currency`, not `currency_code` (Orders/Payments v2 use `currency_code`).
 - Webhooks: tunnel localhost (ngrok or Cloudflare Tunnel) and subscribe to all events. Respond 2xx, or PayPal retries up to 25 times over 3 days. Webhooks are per app, per environment.
 - Debug in Developer Dashboard → Event logs (API calls, webhook events with resend, error logs) and Sandbox notifications. Select the app first.
 - Test unhappy paths: declines, failed renewals, refunds, disputes.

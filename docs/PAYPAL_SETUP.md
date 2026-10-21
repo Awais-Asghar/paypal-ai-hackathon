@@ -98,7 +98,7 @@ In Claude Code:
 |---|---|
 | `401 Client Authentication failed` | Wrong Client ID or Secret, or you copied Live keys. Re-copy them from **Sandbox** → Apps & Credentials |
 | `✗ scope for Payouts / Transaction Search missing` | Turn the feature on in Step 5 and wait 10–15 minutes |
-| `NOT_AUTHORIZED` on Transaction Search | The feature isn't enabled yet, or is still propagating. Wait and retry |
+| `NOT_AUTHORIZED` on Transaction Search | The feature isn't enabled yet, or PayPal handed back a **cached token** issued before the feature was turned on. Cached tokens keep their old scopes for up to 9 hours. Request the token with `grant_type=client_credentials&ignoreCache=true` (the check script does this) |
 | Login link shows "invalid redirect_uri" | The return URL in Step 5 must be exactly `http://localhost:3000/callback` |
 | Payout `DENIED` or stuck | Check that `SANDBOX_ETHAN_EMAIL` is a sandbox **personal** account and the currency matches the accounts' country |
 | Can't create a PayPal account in your country | Ask in the PayPal Discord: https://discord.gg/sJ2G6DyvSK |

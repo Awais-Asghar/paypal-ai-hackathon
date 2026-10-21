@@ -11,7 +11,7 @@ const BASE = process.env.PAYPAL_BASE_URL || "https://api-m.sandbox.paypal.com";
 const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 const CURRENCY = process.env.PAYPAL_CURRENCY || "CAD";
-const REDIRECT_URI = process.env.PAYPAL_LOGIN_REDIRECT_URI || "http://localhost:3000/callback";
+const REDIRECT_URI = process.env.PAYPAL_LOGIN_REDIRECT_URI || "http://127.0.0.1:3000/callback";
 const WEB_BASE = BASE.includes("sandbox") ? "https://www.sandbox.paypal.com" : "https://www.paypal.com";
 
 // Exiting with process.exit() while a fetch socket is closing crashes libuv on Windows,

@@ -49,9 +49,10 @@ On the SureSend app's page, scroll to **Features** (some may sit under "Other fe
 - [x] **Transaction search**
 - [x] **Payouts**
 - [x] **Log in with PayPal**, then open its **Advanced settings**:
-  - **Return URL:** `http://localhost:3000/callback`
+  - **Return URL:** `http://127.0.0.1:3000/callback` (PayPal rejects `http://localhost:...` here with a generic "Something went wrong" error)
   - **Information requested from customers:** tick **Email** and **PayPal account ID (payer ID)**
-  - If it asks for privacy policy or user agreement URLs, any placeholder works for the sandbox, for example `http://localhost:3000/privacy` and `http://localhost:3000/terms`.
+  - **Privacy policy URL** and **User agreement URL:** fill both in even if they don't look required. Without them the feature silently unticks itself after saving. We use `https://github.com/Awais-Asghar/paypal-ai-hackathon` for both.
+  - Click **Save** inside this dialog and wait for "Application was saved successfully".
 
 Click **Save Changes**, then **wait 10–15 minutes**. Feature changes take a while to apply.
 
@@ -99,7 +100,8 @@ In Claude Code:
 | `401 Client Authentication failed` | Wrong Client ID or Secret, or you copied Live keys. Re-copy them from **Sandbox** → Apps & Credentials |
 | `✗ scope for Payouts / Transaction Search missing` | Turn the feature on in Step 5 and wait 10–15 minutes |
 | `NOT_AUTHORIZED` on Transaction Search | The feature isn't enabled yet, or PayPal handed back a **cached token** issued before the feature was turned on. Cached tokens keep their old scopes for up to 9 hours. Request the token with `grant_type=client_credentials&ignoreCache=true` (the check script does this) |
-| Login link shows "invalid redirect_uri" | The return URL in Step 5 must be exactly `http://localhost:3000/callback` |
+| Login link shows "invalid redirect_uri" | The return URL in Step 5 must be exactly `http://127.0.0.1:3000/callback`, matching `PAYPAL_LOGIN_REDIRECT_URI` in `.env` |
+| Log in with PayPal keeps unticking itself after save | Fill in the privacy policy and user agreement URLs (https) and use `127.0.0.1`, not `localhost`, in the return URL. Save inside the dialog and look for "Application was saved successfully" |
 | Payout `DENIED` or stuck | Check that `SANDBOX_ETHAN_EMAIL` is a sandbox **personal** account and the currency matches the accounts' country |
 | Can't create a PayPal account in your country | Ask in the PayPal Discord: https://discord.gg/sJ2G6DyvSK |
 | Token works in the morning, then 401 later | Tokens expire after about 8–9 hours. The script fetches a new one each run; in the AI Toolkit use `/paypal:setup refresh` |

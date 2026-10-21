@@ -38,7 +38,7 @@
 └───────┬───────────────────────────────────────────────┬──────────────────────────────────────────────┘
         │ REST (sandbox)                                │
         ▼                                               ▼
-  PayPal sandbox                                    Postgres (SQLite locally)
+  PayPal sandbox                                    Postgres (PGlite locally)
   Orders v2 (intent=AUTHORIZE) · Authorizations     circles · members · payees · holds ·
   (capture/void/reauthorize) · Payouts ·            checkins · verifications · decisions ·
   Log In with PayPal (identity) · Webhooks ·        audit_log
@@ -113,7 +113,7 @@ Verified 2026-10-21 on the free tiers: `gemini-3.8-flash` (JSON-schema output wo
 | Payments UI | PayPal JS SDK (v6) for buyer approval |
 | Backend | Next.js route handlers (TypeScript); REST calls to PayPal (Orders, Payments, Payouts, Identity, Reporting) |
 | AI | Google Gemini API, free tier (tool use, structured output, vision, audio); Groq Whisper for voicemail; provider adapter so Claude/Groq can be swapped in |
-| Data | SQLite locally → Postgres on Render |
+| Data | **Postgres everywhere**: PGlite (embedded Postgres, no install) locally, **Render Postgres** Basic plan for the hosted demo (paid from the $50 Render credits; Render's free database is deleted after 30 days, which would fall inside judging). **Drizzle ORM** for schema, migrations and queries. Neon or Supabase are drop-in alternatives via `DATABASE_URL`; Supabase free projects pause after 7 days idle, which is risky between submission and judging |
 | Jobs | Render cron or Workflows (expiry, cooling-off) |
 | Dev tooling | PayPal AI Toolkit, APIMatic Context Plugin (prize eligibility), Postman PayPal collections |
 | Hosting | Render (judge demo URL) |

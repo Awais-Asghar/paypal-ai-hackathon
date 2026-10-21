@@ -78,7 +78,7 @@ function describeError(r) {
 }
 
 // One-shot local server that captures the browser redirect after approval/login.
-function waitForRedirect(pathname, timeoutMs = 5 * 60_000) {
+function waitForRedirect(pathname, timeoutMs = 15 * 60_000) {
   const url = new URL(REDIRECT_URI);
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
@@ -90,7 +90,7 @@ function waitForRedirect(pathname, timeoutMs = 5 * 60_000) {
       server.close();
       resolve(reqUrl.searchParams);
     });
-    const timer = setTimeout(() => { server.close(); reject(new Error("Timed out waiting for the browser redirect")); }, timeoutMs);
+    const timer = setTimeout(() => { server.close(); reject(new CheckError(`Timed out after ${timeoutMs / 60_000} minutes waiting for the browser. Nothing was charged; run the check again for a new link`)); }, timeoutMs);
     server.listen(Number(url.port) || 80, url.hostname);
   });
 }

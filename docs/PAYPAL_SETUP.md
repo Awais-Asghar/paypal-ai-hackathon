@@ -80,7 +80,7 @@ node --env-file=.env scripts/sandbox-check.mjs authorize capture # hold → capt
 node --env-file=.env scripts/sandbox-check.mjs login             # Log In with PayPal → identity (opens a login link)
 ```
 
-For `authorize` and `login`, the script prints a link and waits on `localhost:3000`:
+For `authorize` and `login`, the script prints a link and waits up to 15 minutes on `localhost:3000`:
 - `authorize`: log in as **Margaret** and approve;
 - `login`: log in as **Ethan**.
 

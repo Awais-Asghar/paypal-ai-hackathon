@@ -25,6 +25,38 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - **Hard requirement:** PayPal *and* AI must both be central. A bolted-on PayPal button fails.
 - **Judging:** five equally weighted criteria: technical implementation, design, impact, innovation, presentation.
 - **Deliverables:** public repo with a LICENSE, working demo (hosted URL or full run instructions), a YouTube demo video under 3 minutes, and a written description plus tools list.
+- **Writing style:** no emojis and no em dashes anywhere (docs/RULES.md §7).
+
+## Current status (updated 2026-10-21)
+
+**Phase:** setup and feasibility are done. Next: build the app (Next.js project, Drizzle schema, Payment Gate with the safety rules), then the AI check-in, the "Is this really you?" page, the family dashboard and Judge Mode. Feature freeze Nov 6.
+
+**Verified in the PayPal sandbox (Canada, CAD)** with `scripts/sandbox-check.mjs`:
+- Token and scopes, Transaction Search, Webhooks API
+- Order `intent=AUTHORIZE` → buyer approval → authorize → void (authorization `9UK966797J1895949`)
+- Payouts to a personal account (batch `W3YARBZK4AA2Q`)
+- Log In with PayPal → userinfo; match family members on `payer_id` (Ethan = `SMLTYXGPGSUYC`)
+- Not yet run: authorize → capture; webhook delivery through a tunnel
+
+**Sandbox accounts** (emails live in `.env`):
+
+| Account | Type | Role |
+|---|---|---|
+| SureSend Demo | Business | Platform: holds, captures, pays out |
+| Margaret Collins ("Nana") | Personal, 5,000 CAD | Protected person |
+| Ethan Collins | Personal | Real grandson; verifies and receives |
+| Robert Hayes | Personal | Known payee (landlord) for the normal-payment scene |
+
+The PayPal app shows as "HoldOn" in the dashboard list (page title SureSend); its keys are unchanged.
+
+**Decisions made**
+- Name: **SureSend** (renamed from HoldOn). Only idea; the old brainstorm is in git history only (`git show 4260579:IDEAS.md`).
+- AI: provider switch `LLM_PROVIDER` (default `gemini`). Main model `gemini-3.8-flash` on the free tier (`GEMINI_API_KEY_Pro`, backup `GEMINI_API_KEY_Plus`). Groq (`GROQ_API_KEY`) for `whisper-large-v3-turbo` transcription, `openai/gpt-oss-120b` fallback chat and `llama-prompt-guard-2` injection screening. Groq has no vision model. Free-tier Gemini latency still needs measuring.
+- Database: Postgres everywhere: PGlite locally (nothing to install), Render Postgres (paid Basic plan from the $50 Render credits) for the hosted demo, Drizzle ORM. Not Supabase: free projects pause after 7 days idle.
+- Hosting: Render (sponsor prize), around Nov 5–6. Not Vercel.
+- Log In with PayPal return URL is `http://127.0.0.1:3000/callback`; PayPal rejects `localhost` for it.
+
+**Not done yet (owner side):** install the PayPal AI Toolkit plugin and the APIMatic Context Plugin (APIMatic prize eligibility).
 
 ## How to work here
 
@@ -44,7 +76,9 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 
 - Base URL: `https://api-m.sandbox.paypal.com`. Credentials are a client ID (public) and a client secret (server only).
 - OAuth tokens expire after about 8–9 hours. Cache them and refresh on 401. For the AI Toolkit MCP use `/paypal:setup refresh`.
-- Business sandbox account = merchant (receives). Personal sandbox account = buyer (pays). Create both **in the same country**.
+- Business sandbox account = merchant (receives). Personal sandbox account = buyer (pays). All of ours are in **Canada (CAD)**; never mix countries.
+- The Log In with PayPal settings only stick when the privacy policy and user agreement URLs are filled in and the return URL uses `127.0.0.1`. Save inside the dialog and look for "Application was saved successfully".
+- Sandbox checkout pages and their payment methods (a test Visa and a test bank) are fake. Always confirm the address is `sandbox.paypal.com`.
 - Enable **Transaction Search** in the app settings. Settings changes take 10–15 minutes.
 - **Cached tokens keep old scopes.** PayPal returns the same access token until it expires, so a feature enabled later won't appear in it. Request tokens with `grant_type=client_credentials&ignoreCache=true` after changing app features.
 - The Payouts amount field is `currency`, not `currency_code` (Orders/Payments v2 use `currency_code`).
@@ -56,7 +90,7 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 ## Useful commands and tools
 
 - PayPal AI Toolkit (Claude Code): `/plugin install paypal@claude-plugins-official`, then `/paypal:setup`, `/paypal:sandbox`, `/paypal:test-accounts`, `/paypal:explain-error <code>`, `/paypal:doctor`
-- Sandbox token: `curl -X POST https://api-m.sandbox.paypal.com/v1/oauth2/token -u "$PAYPAL_CLIENT_ID:$PAYPAL_CLIENT_SECRET" -d grant_type=client_credentials`
+- Sandbox token: `curl -X POST https://api-m.sandbox.paypal.com/v1/oauth2/token -u "$PAYPAL_CLIENT_ID:$PAYPAL_CLIENT_SECRET" -d "grant_type=client_credentials&ignoreCache=true"`
 - PayPal examples: https://github.com/paypal-examples/docs-examples
 - AG Grid + PayPal boilerplate: https://github.com/paypaldev/hackathon-paypal-ag-grid-boilerplate
 - Postman collections: https://www.postman.com/paypal
@@ -64,5 +98,5 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 ## Git
 
 - Remote: `origin` → https://github.com/Awais-Asghar/paypal-ai-hackathon (public).
-- **Nothing is pushed without permission** (docs/RULES.md §1).
+- **Nothing is pushed without permission** (docs/RULES.md §1). Before each push, check that `.env` isn't tracked and scan new commits for key patterns.
 - Commit locally with clear messages and report each commit to the owner.

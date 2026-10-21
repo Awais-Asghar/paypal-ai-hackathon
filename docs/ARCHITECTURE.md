@@ -1,6 +1,6 @@
 # Architecture & Project Plan: SureSend
 
-> **Status:** idea chosen (2026-10-21); week-1 sandbox feasibility checks next. Product spec: [PROJECT.md](PROJECT.md). Demo plan: [DEMO_PLAN.md](DEMO_PLAN.md). Sandbox setup: [PAYPAL_SETUP.md](PAYPAL_SETUP.md).
+> **Status (2026-10-21):** sandbox feasibility verified in Canada (authorize→void, payouts, Log In with PayPal, Transaction Search); AI keys verified (Gemini, Groq); database and hosting decided. Next: build the app. Product spec: [PROJECT.md](PROJECT.md). Demo plan: [DEMO_PLAN.md](DEMO_PLAN.md). Sandbox setup: [PAYPAL_SETUP.md](PAYPAL_SETUP.md).
 
 ## Chosen project
 

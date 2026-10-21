@@ -8,7 +8,7 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 
 1. **[docs/RULES.md](docs/RULES.md): hard rules.** No `git push`, no deleting anything, and no publishing without the owner's explicit permission each time. Never commit secrets. Sandbox only.
 2. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): architecture, money flow, **safety rules enforced in code**, stack and timeline.
-3. [docs/PROJECT.md](docs/PROJECT.md): product spec for **HoldOn**, a circuit breaker for scam payments.
+3. [docs/PROJECT.md](docs/PROJECT.md): product spec for **SureSend**, a circuit breaker for scam payments.
 4. [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md): demo video script and judge access plan. Several features exist because of it.
 5. [docs/PAYPAL_SETUP.md](docs/PAYPAL_SETUP.md): PayPal developer/sandbox setup and how to run the sandbox checks.
 6. [docs/HACKATHON.md](docs/HACKATHON.md): requirements, judging criteria, prizes, sponsor tools, submission checklist.
@@ -16,7 +16,7 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 
 ## What this project is
 
-**HoldOn**, an entry for the **PayPal AI Hackathon** ("Build what's next with PayPal and AI"), hosted on Devpost. HoldOn holds a scam-prone payment as a PayPal authorization, runs an AI check-in, and verifies the named family member through Log In with PayPal. Then it either captures and pays out to the verified payee only, or voids. Solo build.
+**SureSend**, an entry for the **PayPal AI Hackathon** ("Build what's next with PayPal and AI"), hosted on Devpost. SureSend holds a scam-prone payment as a PayPal authorization, runs an AI check-in, and verifies the named family member through Log In with PayPal. Then it either captures and pays out to the verified payee only, or voids. Solo build.
 
 - **Never weaken the safety rules** in docs/ARCHITECTURE.md (pay only the verified payee, fail safe, hard red flags override the LLM, the LLM never calls PayPal money-moving endpoints directly).
 - Sandbox checks: `node --env-file=.env scripts/sandbox-check.mjs <token|search|webhooks|payouts|authorize|login|all>`.

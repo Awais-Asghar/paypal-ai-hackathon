@@ -1,4 +1,4 @@
-# Demo Plan: HoldOn
+# Demo Plan: SureSend
 
 Two separate things have to work:
 
@@ -13,7 +13,7 @@ Two separate things have to work:
 
 | Role | What's on screen | How it's recorded |
 |---|---|---|
-| **Nana** (Margaret Collins, protected person) | Phone-sized HoldOn app | Chrome window in device emulation (iPhone frame), sandbox *personal* account A |
+| **Nana** (Margaret Collins, protected person) | Phone-sized SureSend app | Chrome window in device emulation (iPhone frame), sandbox *personal* account A |
 | **Ethan Collins** (real grandson, trusted circle) | Second phone-sized window | Separate Chrome profile, sandbox *personal* account B |
 | **"Scammer"** | Incoming-call screen plus voicemail audio | Built into the app's demo mode. The voice is an AI clone of **our own voice** |
 | **Proof** | PayPal sandbox: authorization status and balances | Developer Dashboard / sandbox.paypal.com in a third window, or an in-app "PayPal live status" panel that reads the real API |
@@ -25,8 +25,8 @@ Two separate things have to work:
 |---|---|---|---|
 | 0:00–0:12 | **Hook** | Black screen, phone ringing, caller "Unknown". Caption: *"This voice is AI-generated. It took 30 seconds of audio."* | Cloned voice: "Nana? It's Ethan… I got arrested. I need $2,500 for bail. Please don't tell Mom." |
 | 0:12–0:27 | **Problem** | Three stats animate in: $704M lost in Canada in 2025 · only 5–10% reported · voice clones on the rise | "When a scammer convinces you to send money yourself, fraud systems stay silent, because it really is you pressing send." |
-| 0:27–0:37 | **Solution** | HoldOn logo, tagline: *A pause between "send" and "gone."* | "HoldOn holds the money, checks the story, and asks the people you trust." |
-| 0:37–1:00 | **Nana sends** | Nana enters $2,500 to "Ethan (new number)". PayPal sandbox approval pops up and she approves. The screen says **"Held, not sent."** Cut to the proof panel: authorization `CREATED`, balance unchanged | "Nana approves with PayPal, but HoldOn only *authorizes* the payment. The money is reserved, not moved." |
+| 0:27–0:37 | **Solution** | SureSend logo, tagline: *A pause between "send" and "gone."* | "SureSend holds the money, checks the story, and asks the people you trust." |
+| 0:37–1:00 | **Nana sends** | Nana enters $2,500 to "Ethan (new number)". PayPal sandbox approval pops up and she approves. The screen says **"Held, not sent."** Cut to the proof panel: authorization `CREATED`, balance unchanged | "Nana approves with PayPal, but SureSend only *authorizes* the payment. The money is reserved, not moved." |
 | 1:00–1:35 | **AI check-in** | Chat: AI asks gentle questions, and Nana uploads the voicemail. Red-flag chips appear: *secrecy*, *urgency*, *bail*, *new number*. Risk: **High**, with a plain-language reason | "The AI listens to the voicemail and spots the classic grandparent-scam pattern, without making Nana feel foolish." |
 | 1:35–2:00 | **"Is this really Ethan?"** | Ethan's phone gets a link. He taps **Log in with PayPal**, and the identity matches the family record. He taps "That's not me. I'm in class." | "A voice clone can copy Ethan's voice. It can't log in to Ethan's PayPal." |
 | 2:00–2:15 | **Money kept safe** | Authorization **voided** (proof panel updates from the webhook). Nana's screen: "$2,500 kept safe." Family summary card | "The hold is cancelled. The money never left." |
@@ -52,7 +52,7 @@ Two separate things have to work:
 
 ### Primary: hosted on Render
 
-- `https://holdon.onrender.com` (name TBD). Use the paid instance from the $50 Render credits so it doesn't sleep and isn't cold when a judge opens it.
+- `https://suresend.onrender.com` (name TBD). Use the paid instance from the $50 Render credits so it doesn't sleep and isn't cold when a judge opens it.
 - **Judge Mode landing page:**
   1. A short "what you're about to see" note.
   2. **Scenario buttons:** *Grandparent voice-clone scam*, *CRA threat call*, *Normal rent payment*.

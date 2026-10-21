@@ -1,4 +1,4 @@
-# Project: HoldOn, a circuit breaker for scam payments
+# Project: SureSend, a circuit breaker for scam payments
 
 Our entry for the PayPal AI Hackathon (chosen 2026-10-21). Deadline: **Nov 12, 2026, 12:00 pm PT**. Solo build.
 
@@ -7,7 +7,7 @@ Related docs: [ARCHITECTURE.md](ARCHITECTURE.md) (how it's built) · [DEMO_PLAN.
 The earlier brainstorm of 12 other ideas is in git history only: `git show 4260579:IDEAS.md`.
 
 
-> Bank fraud systems stop strangers from stealing your money. Nothing stops *you* from sending it to a scammer yourself. HoldOn puts a pause between "send" and "gone": the money is held, not moved, until an AI check and the people you trust say it's safe.
+> Bank fraud systems stop strangers from stealing your money. Nothing stops *you* from sending it to a scammer yourself. SureSend puts a pause between "send" and "gone": the money is held, not moved, until an AI check and the people you trust say it's safe.
 
 **Problem.** In authorized push payment (APP) fraud, the victim sends the money themselves. Common versions are grandparent and voice-clone "family emergency" calls, CRA and immigration-threat calls, romance scams, tech support scams and fake investments. Fraud detection doesn't fire, because the real account owner is making the payment.
 - Canadians lost **$704M** to fraud in 2025 (CAFC). Only 5–10% of fraud is reported.
@@ -18,17 +18,17 @@ The earlier brainstorm of 12 other ideas is in git history only: `git show 42605
 **Who it's for.** Seniors (the protected person) and their family (the trusted circle). Second audience: newcomers and international students in Canada, who are targeted by fake CRA and immigration-threat calls.
 
 **How it works**
-1. **Hold, don't send.** When the protected person sends money (say, $2,500 "for my grandson's bail"), HoldOn creates a **PayPal order with `intent=AUTHORIZE`**. The funds are reserved on her PayPal but **not moved**.
+1. **Hold, don't send.** When the protected person sends money (say, $2,500 "for my grandson's bail"), SureSend creates a **PayPal order with `intent=AUTHORIZE`**. The funds are reserved on her PayPal but **not moved**.
 2. **AI check-in.** A warm, non-judgmental conversation in her language (text, with voice as a stretch goal):
    - It asks the questions that expose scams: who asked, is it urgent, were you told to keep it secret, did they call from a new number?
    - It can read a screenshot of the message, or transcribe the voicemail.
    - It matches the situation against known scam patterns and gives a risk level with plain-language reasons.
-3. **"Is this really you?"** If the story involves a family member, HoldOn sends that person, at the contact on file, a link. They must **Log In with PayPal**, and their verified PayPal identity must match the family-circle record. A voice clone can imitate a grandson, but it can't log in to his PayPal.
+3. **"Is this really you?"** If the story involves a family member, SureSend sends that person, at the contact on file, a link. They must **Log In with PayPal**, and their verified PayPal identity must match the family-circle record. A voice clone can imitate a grandson, but it can't log in to his PayPal.
 4. **Trusted circle decides.** The family gets a one-screen summary. The response scales with risk:
    - Low risk goes through instantly.
    - Medium risk waits a cooling-off timer.
    - High risk needs a family approval.
-5. **Outcome.** If it's approved, HoldOn **captures** the authorization and pays the recipient through **Payouts**. If it's denied or times out, HoldOn **voids** the authorization. The money never left.
+5. **Outcome.** If it's approved, SureSend **captures** the authorization and pays the recipient through **Payouts**. If it's denied or times out, SureSend **voids** the authorization. The money never left.
 6. **Aftercare.** If a scam got through anyway, the AI prepares a pre-filled CAFC report and, where applicable, a PayPal dispute with evidence.
 7. **Family dashboard.** It shows money kept safe, new and unusual payees (baselined from **Transaction Search**), and the history of check-ins.
 
@@ -56,13 +56,13 @@ The earlier brainstorm of 12 other ideas is in git history only: `git show 42605
 **Rules against scammer counter-moves** (for example "I don't have my phone, send it to this other account"):
 1. **Never trust caller-supplied contact details.** Verification goes only to the contact details the family saved at setup. The real person can verify from any device by logging in with PayPal.
 2. **Pay only the verified person.** If the stated purpose is "for Ethan", the payout can go *only* to Ethan's verified PayPal account. Any other recipient is a mismatch and an automatic high-risk flag.
-3. **Fail safe: when in doubt, wait.** If the person can't be reached, the funds stay held and a second trusted contact is asked. HoldOn suggests calling the hospital or police station on a number it looks up itself, never one the caller gave.
+3. **Fail safe: when in doubt, wait.** If the person can't be reached, the funds stay held and a second trusted contact is asked. SureSend suggests calling the hospital or police station on a number it looks up itself, never one the caller gave.
 4. **Scam phrases raise risk, they don't unlock money.** "No phone", "different account", "don't tell anyone", "urgent" and "gift cards/crypto" all increase the risk score.
 
 **Risks:**
 - Log In with PayPal must be enabled on the sandbox app with a return URL, and Payouts must be enabled. **Verify in week 1.**
 - Authorizations have a 3-day honor period, which is fine for a 24h cooling-off.
-- The obvious judge question: "a scammer will just ask for gift cards." Answer: HoldOn protects the PayPal rail, and its check-in also warns about gift-card and crypto requests. The pitch is that this belongs *inside* PayPal.
+- The obvious judge question: "a scammer will just ask for gift cards." Answer: SureSend protects the PayPal rail, and its check-in also warns about gift-card and crypto requests. The pitch is that this belongs *inside* PayPal.
 
 | Tech | Design | Impact | Innovation | Presentation | Build (solo) |
 |---|---|---|---|---|---|
@@ -74,7 +74,7 @@ The earlier brainstorm of 12 other ideas is in git history only: `git show 42605
 
 Run with [`scripts/sandbox-check.mjs`](../scripts/sandbox-check.mjs). Setup steps are in [PAYPAL_SETUP.md](PAYPAL_SETUP.md).
 
-- [ ] Sandbox business account (HoldOn platform) plus personal accounts Margaret Collins ("Nana"), Ethan Collins and Robert Hayes (landlord), all in Canada (CAD); Transaction Search enabled on the app
+- [ ] Sandbox business account (SureSend platform) plus personal accounts Margaret Collins ("Nana"), Ethan Collins and Robert Hayes (landlord), all in Canada (CAD); Transaction Search enabled on the app
 - [ ] Access token from client credentials
 - [ ] Order with `intent=AUTHORIZE` → buyer approves → authorize → **void** (and separately → **capture**)
 - [ ] Payouts from the business account to a personal sandbox account

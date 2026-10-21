@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Week-1 feasibility checks for HoldOn against the PayPal sandbox. Setup: docs/PAYPAL_SETUP.md
+// Week-1 feasibility checks for SureSend against the PayPal sandbox. Setup: docs/PAYPAL_SETUP.md
 // Usage: node --env-file=.env scripts/sandbox-check.mjs <command>
 // Commands: token | search | webhooks | payouts | authorize [capture] | login | all
 // Never prints secrets or access tokens.
@@ -26,7 +26,7 @@ function abort(msg) {
 }
 
 if (!BASE.includes("sandbox")) {
-  abort("PAYPAL_BASE_URL is not a sandbox URL. HoldOn checks run against the sandbox only (docs/RULES.md §4).");
+  abort("PAYPAL_BASE_URL is not a sandbox URL. SureSend checks run against the sandbox only (docs/RULES.md §4).");
 }
 if (!CLIENT_ID || !CLIENT_SECRET) {
   abort("Missing PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET. Copy .env.example to .env and fill them in.");
@@ -85,7 +85,7 @@ function waitForRedirect(pathname, timeoutMs = 5 * 60_000) {
       const reqUrl = new URL(req.url, url.origin);
       if (reqUrl.pathname !== pathname) { res.writeHead(404).end(); return; }
       res.writeHead(200, { "Content-Type": "text/html" });
-      res.end("<h2>HoldOn sandbox check: received. You can close this tab and return to the terminal.</h2>");
+      res.end("<h2>SureSend sandbox check: received. You can close this tab and return to the terminal.</h2>");
       clearTimeout(timer);
       server.close();
       resolve(reqUrl.searchParams);
@@ -134,8 +134,8 @@ async function checkPayouts() {
   if (!receiver) { console.log("✗ Payouts: set SANDBOX_ETHAN_EMAIL to a sandbox personal account email"); return; }
   const r = await api("POST", "/v1/payments/payouts", {
     body: {
-      sender_batch_header: { sender_batch_id: `holdon-check-${Date.now()}`, email_subject: "HoldOn sandbox payout check" },
-      items: [{ recipient_type: "EMAIL", receiver, amount: { value: "1.00", currency: CURRENCY }, note: "HoldOn feasibility check", sender_item_id: "check-1" }],
+      sender_batch_header: { sender_batch_id: `suresend-check-${Date.now()}`, email_subject: "SureSend sandbox payout check" },
+      items: [{ recipient_type: "EMAIL", receiver, amount: { value: "1.00", currency: CURRENCY }, note: "SureSend feasibility check", sender_item_id: "check-1" }],
     },
   });
   if (!r.ok) { console.log(`✗ Payouts create: ${describeError(r)}`); return; }
@@ -157,7 +157,7 @@ async function checkAuthorize(finish = "void") {
   const r = await api("POST", "/v2/checkout/orders", {
     body: {
       intent: "AUTHORIZE",
-      purchase_units: [{ custom_id: "holdon-check", description: "HoldOn feasibility check (held, not sent)", amount: { currency_code: CURRENCY, value: "25.00" } }],
+      purchase_units: [{ custom_id: "suresend-check", description: "SureSend feasibility check (held, not sent)", amount: { currency_code: CURRENCY, value: "25.00" } }],
       payment_source: {
         paypal: {
           experience_context: {

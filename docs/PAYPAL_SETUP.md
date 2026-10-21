@@ -1,6 +1,6 @@
 # PayPal Developer Account & Sandbox Setup
 
-Step-by-step setup for HoldOn. Takes about 15–20 minutes plus a 10–15 minute wait for settings to apply. **No documents, ID upload or credit card are needed.** Everything runs in the sandbox with fake money.
+Step-by-step setup for SureSend. Takes about 15–20 minutes plus a 10–15 minute wait for settings to apply. **No documents, ID upload or credit card are needed.** Everything runs in the sandbox with fake money.
 
 ## Step 1: Get a PayPal account (skip if you already have one)
 
@@ -16,15 +16,15 @@ Step-by-step setup for HoldOn. Takes about 15–20 minutes plus a 10–15 minute
 2. At the top of the dashboard, make sure the toggle says **Sandbox**, not Live. Keep it on Sandbox for everything below.
 3. PayPal has automatically created two test accounts for you: one **Business** and one **Personal**.
 
-## Step 3: Create the test accounts for HoldOn
+## Step 3: Create the test accounts for SureSend
 
-HoldOn needs four sandbox accounts, **all in Canada (CAD)**, which matches our Canadian story (CAFC fraud data, fake CRA calls). Don't mix countries. If a check fails because of the country, we'll add a US set as a fallback.
+SureSend needs four sandbox accounts, **all in Canada (CAD)**, which matches our Canadian story (CAFC fraud data, fake CRA calls). Don't mix countries. If a check fails because of the country, we'll add a US set as a fallback.
 
 Go to **Testing Tools → Sandbox Accounts → Create account**. Use the **default** dialog: it generates the email and password for you. The "custom account" form needs an email and password typed in. Create:
 
 | Account | Type | Country | Name (set after creating) | Used as |
 |---|---|---|---|---|
-| Platform | Business | Canada | **HoldOn Demo** | The HoldOn app that holds and releases money |
+| Platform | Business | Canada | **SureSend Demo** | The SureSend app that holds and releases money |
 | Grandma | Personal | Canada | **Margaret Collins** ("Nana") | The person being protected (pays) |
 | Grandson | Personal | Canada | **Ethan Collins** | The real grandson (verifies, receives) |
 | Landlord | Personal | Canada | **Robert Hayes** | Known payee for the "normal rent payment" scene |
@@ -34,17 +34,17 @@ For each one, open the **⋯ menu → View/Edit account**, then:
 - **Funding:** give Margaret a big balance, for example 5,000 CAD;
 - note down each account's **email** and **password**. You'll use them to log in during tests.
 
-## Step 4: Create the HoldOn app (this gives you the API keys)
+## Step 4: Create the SureSend app (this gives you the API keys)
 
 1. Go to **Apps & Credentials** (top menu), make sure **Sandbox** is selected → **Create App**.
-2. App name: `HoldOn`. Type: **Merchant**. Sandbox account: pick **HoldOn Platform** (the business account from Step 3) → **Create App**.
+2. App name: `SureSend`. Type: **Merchant**. Sandbox account: pick **SureSend Platform** (the business account from Step 3) → **Create App**.
 3. You'll see:
    - **Client ID**: public, fine to use in front-end code;
    - **Secret**: click **Show**. It's private, like a password. **Never share it, paste it in chat or commit it.**
 
-## Step 5: Turn on the features HoldOn needs
+## Step 5: Turn on the features SureSend needs
 
-On the HoldOn app's page, scroll to **Features** (some may sit under "Other features"):
+On the SureSend app's page, scroll to **Features** (some may sit under "Other features"):
 
 - [x] **Transaction search**
 - [x] **Payouts**

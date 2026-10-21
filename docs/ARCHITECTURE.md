@@ -1,4 +1,4 @@
-# Architecture & Project Plan: HoldOn
+# Architecture & Project Plan: SureSend
 
 > **Status:** idea chosen (2026-10-21); week-1 sandbox feasibility checks next. Product spec: [PROJECT.md](PROJECT.md). Demo plan: [DEMO_PLAN.md](DEMO_PLAN.md). Sandbox setup: [PAYPAL_SETUP.md](PAYPAL_SETUP.md).
 
@@ -6,7 +6,7 @@
 
 | Field | Value |
 |---|---|
-| Name | **HoldOn** |
+| Name | **SureSend** |
 | One-line pitch | A pause between "send" and "gone": the money is held through PayPal until an AI check-in and your trusted family say it's safe |
 | Target users | **Protected person:** seniors (later, newcomers and international students). **Trusted circle:** their family |
 | Problem | Authorized push payment scams (voice-clone "family emergency", CRA/immigration threats, romance, tech support). The victim sends the money themselves, so fraud systems don't fire. Canada lost $704M to fraud in 2025 |
@@ -21,7 +21,7 @@
  send · check-in chat            "Is this really you?" link        decisions · history
         │                                │                                │
         ▼                                ▼                                ▼
-┌──────────────────────────────── HoldOn backend (Node.js + TypeScript) ───────────────────────────────┐
+┌──────────────────────────────── SureSend backend (Node.js + TypeScript) ─────────────────────────────┐
 │                                                                                                      │
 │  Payment Gate (single choke point for all money movement)                                            │
 │    create hold → assess → verify → decide → capture+payout │ void   (idempotent, audit-logged)       │
@@ -58,7 +58,7 @@ Nana taps "Send $2,500 to Ethan"
   │      MEDIUM               → cooling-off timer (24h, skippable in demo)   │
   │      HIGH / family story  → "Is this really you?" + trusted-circle vote  │                           [state: VERIFYING]
   │                                                                         ▼
-  ├─ APPROVED ─► POST /v2/payments/authorizations/{id}/capture   → funds to HoldOn platform account
+  ├─ APPROVED ─► POST /v2/payments/authorizations/{id}/capture   → funds to SureSend platform account
   │              POST /v1/payments/payouts  (receiver = the *verified* payee only)                       [state: RELEASED]
   │
   └─ DENIED / TIMEOUT / EXPIRING ─► POST /v2/payments/authorizations/{id}/void   → money never left       [state: VOIDED]

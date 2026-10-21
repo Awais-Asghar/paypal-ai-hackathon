@@ -5,14 +5,18 @@ Guide for AI coding agents working in this repository.
 ## Read first
 
 1. **[RULES.md](RULES.md): hard rules.** No `git push`, no deleting anything, and no publishing without the owner's explicit permission each time. Never commit secrets. Sandbox only.
-2. [ARCHITECTURE.md](ARCHITECTURE.md): the chosen project, architecture, stack and timeline.
-3. [IDEAS.md](IDEAS.md): the idea shortlist and scoring (status: no idea chosen yet).
-4. [docs/HACKATHON.md](docs/HACKATHON.md): requirements, judging criteria, prizes, sponsor tools, submission checklist.
-5. [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): the four official webinars (key takeaways at the top).
+2. [ARCHITECTURE.md](ARCHITECTURE.md): architecture, money flow, **safety rules enforced in code**, stack and timeline.
+3. [IDEAS.md](IDEAS.md): product spec for **HoldOn** (the chosen and only idea): a circuit breaker for scam payments.
+4. [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md): demo video script and judge access plan. Several features exist because of it.
+5. [docs/HACKATHON.md](docs/HACKATHON.md): requirements, judging criteria, prizes, sponsor tools, submission checklist.
+6. [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): the four official webinars (key takeaways at the top).
 
 ## What this project is
 
-An entry for the **PayPal AI Hackathon** ("Build what's next with PayPal and AI"), hosted on Devpost.
+**HoldOn**, an entry for the **PayPal AI Hackathon** ("Build what's next with PayPal and AI"), hosted on Devpost. HoldOn holds a scam-prone payment as a PayPal authorization, runs an AI check-in, and verifies the named family member through Log In with PayPal. Then it either captures and pays out to the verified payee only, or voids. Solo build.
+
+- **Never weaken the safety rules** in ARCHITECTURE.md (pay only the verified payee, fail safe, hard red flags override the LLM, the LLM never calls PayPal money-moving endpoints directly).
+- Sandbox checks: `node --env-file=.env scripts/sandbox-check.mjs <token|search|webhooks|payouts|authorize|login|all>`.
 
 - **Deadline:** Nov 12, 2026, 12:00 pm PT.
 - **Hard requirement:** PayPal *and* AI must both be central. A bolted-on PayPal button fails.

@@ -1,110 +1,130 @@
-# Architecture & Project Plan
+# Architecture & Project Plan: HoldOn
 
-> **Status:** ideation. No idea chosen yet; candidates are in [IDEAS.md](IDEAS.md).
-> This file holds the baseline architecture that every shortlisted idea shares. When an idea is chosen, fill in the **Chosen project** section and adjust the rest.
+> **Status:** idea chosen (2026-10-21); week-1 sandbox feasibility checks next. Product spec: [IDEAS.md](IDEAS.md). Demo plan: [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md).
 
 ## Chosen project
 
 | Field | Value |
 |---|---|
-| Name | _TBD_ |
-| One-line pitch | _TBD_ |
-| Target user | _TBD_ |
-| Problem | _TBD_ |
-| Prize targets | _TBD_ (one Grand or Honorable Mention + one Sponsor prize) |
-| Demo "wow" moment | _TBD_ |
+| Name | **HoldOn** |
+| One-line pitch | A pause between "send" and "gone": the money is held through PayPal until an AI check-in and your trusted family say it's safe |
+| Target users | **Protected person:** seniors (later, newcomers and international students). **Trusted circle:** their family |
+| Problem | Authorized push payment scams (voice-clone "family emergency", CRA/immigration threats, romance, tech support). The victim sends the money themselves, so fraud systems don't fire. Canada lost $704M to fraud in 2025 |
+| Prize targets | One Grand Prize or one Honorable Mention (Most Impactful, Best Use of PayPal + AI, Best Demo Delivery) + one Sponsor Prize (Render or APIMatic) |
+| Demo moment | The voice-clone "grandson" asks for $2,500. The money is held, the AI flags the scam, the real grandson verifies with Log In with PayPal and says "not me", the authorization is voided, and the screen shows "$2,500 kept safe" |
+| Team | Solo |
 
-## Baseline architecture
+## System overview
 
 ```
-                 ┌─────────────────────────────── Web app (Next.js / React) ──────────────────────────────┐
-  User ─────────►│  UI · chat with the agent · PayPal JS SDK v6 buttons/approval · sponsor UI components   │
-                 └───────────────┬────────────────────────────────────────────────────────────▲──────────┘
-                                 │ HTTPS (REST / server actions)                               │ live updates (SSE)
-                 ┌───────────────▼────────────────────────── Backend (Node.js + TypeScript) ───┴──────────┐
-                 │                                                                                        │
-                 │  Agent runtime ──► LLM (Claude API, tool use)                                          │
-                 │     │   system prompt + guardrails + structured outputs                                │
-                 │     ▼                                                                                  │
-                 │  Tool layer (typed functions the agent may call)                                       │
-                 │     ├─ PayPal tools ──► PayPal Server SDK / REST v2 (sandbox)                          │
-                 │     │                    Orders · Payments · Subscriptions · Payouts · Invoicing ·     │
-                 │     │                    Disputes · Vault · Transaction Search                         │
-                 │     ├─ Domain tools (DB reads/writes, scheduling, notifications)                       │
-                 │     └─ Sponsor tools (Channel3 search, Elastic retrieval, …)                           │
-                 │                                                                                        │
-                 │  Policy / approval gate ── every money-moving tool call is checked and logged          │
-                 │  Webhook receiver ── verify PayPal signature → idempotent event handler → agent       │
-                 │  Jobs / scheduler (Render Workflows or cron) ── cycle runs, reminders, reconciliation  │
-                 └───────────────┬───────────────────────────────▲────────────────────────────────────────┘
-                                 │                               │ webhooks (POST, retried up to 25×/3 days)
-                          ┌──────▼──────┐                 ┌──────┴───────────┐
-                          │  Postgres / │                 │  PayPal sandbox  │
-                          │  SQLite     │                 │  api-m.sandbox.  │
-                          └─────────────┘                 │  paypal.com      │
-                                                          └──────────────────┘
+ Nana's phone (web app)          Ali's phone (web app)             Family dashboard
+ send · check-in chat            "Is this really you?" link        decisions · history
+        │                                │                                │
+        ▼                                ▼                                ▼
+┌──────────────────────────────── HoldOn backend (Node.js + TypeScript) ───────────────────────────────┐
+│                                                                                                      │
+│  Payment Gate (single choke point for all money movement)                                            │
+│    create hold → assess → verify → decide → capture+payout │ void   (idempotent, audit-logged)       │
+│                                                                                                      │
+│  Check-in Agent (Claude, tool use)            Risk Engine                                            │
+│    conversation · screenshot (vision) ·         rules (hard red flags) + LLM structured verdict      │
+│    voicemail transcript · family summary        → LOW / MEDIUM / HIGH + reasons                      │
+│                                                                                                      │
+│  Identity Verifier                             Scheduler (Render cron/Workflows)                    │
+│    Log In with PayPal (OIDC) → match the        cooling-off expiry · authorization expiry           │
+│    saved family-circle record                    (auto-void before the 3-day honor period ends)     │
+│                                                                                                      │
+│  Webhook receiver: verify signature → idempotent handler → update state → push UI update (SSE)       │
+└───────┬───────────────────────────────────────────────┬──────────────────────────────────────────────┘
+        │ REST (sandbox)                                │
+        ▼                                               ▼
+  PayPal sandbox                                    Postgres (SQLite locally)
+  Orders v2 (intent=AUTHORIZE) · Authorizations     circles · members · payees · holds ·
+  (capture/void/reauthorize) · Payouts ·            checkins · verifications · decisions ·
+  Log In with PayPal (identity) · Webhooks ·        audit_log
+  Transaction Search
 ```
 
-### Design principles
+## Money flow
 
-1. **The agent never holds money and never sees secrets.** It calls typed tools, the tools call PayPal, and credentials stay on the server.
-2. **Every money-moving action goes through one gate.** A policy check, an optional human approval, an idempotency key (`PayPal-Request-Id`) and an audit-log row. That gate is what makes an "AI that moves money" safe, and the demo should show it.
-3. **Webhooks are the source of truth** for payment state. The UI and agent react to verified events, not to browser callbacks.
-4. **Sandbox and live are configuration only:** `PAYPAL_BASE_URL`, `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET`. No code changes.
-5. **Demo mode is deterministic.** Seed scripts create sandbox data, and a "simulate next cycle/event" control exists, so the 3-minute video never waits on real time.
+```
+Nana taps "Send $2,500 to Ali"
+  │
+  ├─► POST /v2/checkout/orders  {intent: AUTHORIZE, amount, custom_id: hold_id}  ──► Nana approves in PayPal popup (JS SDK)
+  ├─► POST /v2/checkout/orders/{id}/authorize   → authorization CREATED (funds reserved, NOT moved)   [state: HELD]
+  │
+  ├─► Risk Engine + Check-in Agent              → LOW | MEDIUM | HIGH                                    [state: ASSESSING]
+  │      LOW and known payee  ──────────────────────────────────────────────┐
+  │      MEDIUM               → cooling-off timer (24h, skippable in demo)   │
+  │      HIGH / family story  → "Is this really you?" + trusted-circle vote  │                           [state: VERIFYING]
+  │                                                                         ▼
+  ├─ APPROVED ─► POST /v2/payments/authorizations/{id}/capture   → funds to HoldOn platform account
+  │              POST /v1/payments/payouts  (receiver = the *verified* payee only)                       [state: RELEASED]
+  │
+  └─ DENIED / TIMEOUT / EXPIRING ─► POST /v2/payments/authorizations/{id}/void   → money never left       [state: VOIDED]
+```
 
-### Proposed stack (to confirm once the idea is chosen)
+**Hold state machine:** `DRAFT → HELD → ASSESSING → (VERIFYING | COOLING_OFF) → APPROVED → RELEASED`, or `→ DENIED → VOIDED`. Only the Payment Gate may change state. Each transition writes an audit row.
 
-| Layer | Choice | Why |
+## Safety rules (enforced in code, not in the prompt)
+
+1. **Pay only the verified payee.** For a "family" purpose, the payout receiver must be the family member's PayPal account saved and verified at setup. A caller-supplied account means automatic HIGH risk, and the payout is refused.
+2. **Never use caller-supplied contacts.** Verification links go only to contact details saved at setup.
+3. **Fail safe.** Unknown, unreachable or erroring all mean the money stays held. A scheduled job voids authorizations before the 3-day honor period ends unless someone has approved.
+4. **Hard red flags override the LLM.** Secrecy ("don't tell"), "no phone / new number", a different account, gift cards or crypto, and an urgency + bail/hospital/arrest combination each force at least HIGH, whatever the model's verdict.
+5. **The LLM never calls PayPal directly.** The agent's tools are read-only plus `propose_decision`. Capture, void and payout run only in the Payment Gate after the rules and verification checks pass.
+6. **Idempotency.** `PayPal-Request-Id` on every POST, and webhook events de-duplicated by event ID.
+
+## AI design
+
+| Piece | Model use | Output |
 |---|---|---|
-| Frontend | Next.js (App Router) + React + Tailwind | Fast to build, deploys on Render |
-| Payments UI | PayPal JS SDK v6 | Current PayPal-recommended SDK |
-| Backend | Node.js + TypeScript (Next.js route handlers or a separate service) | Matches PayPal Server SDK + Agent Toolkit (TS) |
-| PayPal | PayPal Server SDK (TS) + REST for anything the SDK doesn't cover | The SDK doesn't cover every API (Payouts, Invoicing, Disputes are REST) |
-| AI | Claude API with tool use (e.g. `claude-sonnet-5-5` for the agent loop, `claude-opus-5-5` for hard reasoning steps) | Strong tool calling; any model is allowed |
-| Agent tooling | PayPal Agent Toolkit (where it fits) + our own typed tools | Counts toward "meaningful PayPal + AI" |
-| Data | Postgres on Render (SQLite locally) | Simple and free tier |
-| Jobs | Render Workflows or cron worker | Cycle runs, reminders, reconciliation; Render prize eligibility |
-| Tunneling (dev) | ngrok or Cloudflare Tunnel | Webhooks to localhost |
-| Sponsor UI | Bryntum Scheduler/Calendar **or** AG Studio (depends on idea) | Sponsor prize |
-| Dev tooling | PayPal AI Toolkit plugin, APIMatic Context Plugin, Postman PayPal collections | Correct APIs plus APIMatic prize eligibility |
+| Check-in conversation | Claude (tool use), warm and non-judgmental, plain language, the protected person's language | Next question or explanation |
+| Evidence reading | Vision for screenshots; speech-to-text for voicemail audio | Extracted claims (who, what, urgency, secrecy, payment method, new contact) |
+| Risk verdict | Structured output (JSON schema): `risk`, `scam_type`, `red_flags[]`, `reasons_plain[]` | Combined with hard rules → final risk |
+| Family summary | Short summary for the trusted circle | One-screen card |
+| Aftercare | Drafts a CAFC report text and dispute evidence | Pre-filled text |
 
-### Environment variables (`.env.example`)
+**Agent tools (read-only + propose):** `get_hold`, `get_payee_history` (Transaction Search baseline), `get_circle`, `record_red_flag`, `request_verification`, `propose_decision`.
 
-```
-PAYPAL_BASE_URL=https://api-m.sandbox.paypal.com
-PAYPAL_CLIENT_ID=
-PAYPAL_CLIENT_SECRET=
-PAYPAL_WEBHOOK_ID=
-ANTHROPIC_API_KEY=
-DATABASE_URL=
-APP_BASE_URL=http://localhost:3000
-```
+Models: `claude-sonnet-5-5` for the conversation loop; `claude-opus-5-5` for the final risk verdict if quality requires it. The model is pinned in config.
 
-### Repository layout (planned)
+## Data model (first cut)
 
-```
-/
-├─ CLAUDE.md             # agent guide (read first)
-├─ RULES.md              # hard rules (no push/delete without permission, secrets, sandbox only)
-├─ ARCHITECTURE.md       # this file
-├─ IDEAS.md              # brainstorm + scoring
-├─ README.md             # judge-facing: pitch, demo link, setup, test credentials
-├─ LICENSE               # MIT (shows in GitHub About)
-├─ docs/
-│  ├─ HACKATHON.md       # rules, prizes, judging, sponsors, checklist
-│  └─ WEBINAR_TRANSCRIPTS.md
-└─ app/                  # source (created once the idea is chosen)
-```
+- `circles` (id, protected_member_id)
+- `members` (id, circle_id, role: protected|trusted, name, contact, paypal_user_id, paypal_email, verified_at)
+- `payees` (id, circle_id, label, paypal_email, member_id?, known: bool)
+- `holds` (id, circle_id, payee_id, amount, currency, purpose, state, paypal_order_id, paypal_authorization_id, risk, expires_at)
+- `checkins` (id, hold_id, transcript, evidence refs, verdict json)
+- `verifications` (id, hold_id, member_id, token, status, paypal_user_id_seen)
+- `decisions` (id, hold_id, member_id|system, decision, reason)
+- `audit_log` (id, hold_id, from_state, to_state, actor, at, detail)
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Frontend | Next.js (App Router) + React + Tailwind, phone-first layouts for Nana/Ali |
+| Payments UI | PayPal JS SDK (v6) for buyer approval |
+| Backend | Next.js route handlers (TypeScript); REST calls to PayPal (Orders, Payments, Payouts, Identity, Reporting) |
+| AI | Anthropic Claude API (tool use + structured output); speech-to-text for voicemail |
+| Data | SQLite locally → Postgres on Render |
+| Jobs | Render cron or Workflows (expiry, cooling-off) |
+| Dev tooling | PayPal AI Toolkit, APIMatic Context Plugin (prize eligibility), Postman PayPal collections |
+| Hosting | Render (judge demo URL) |
+
+## Environment variables
+
+See [.env.example](.env.example). Secrets stay in `.env` locally and in Render environment variables in production, never in git.
 
 ## Timeline (Oct 21 → Nov 12, 12:00 pm PT)
 
 | Window | Goal |
 |---|---|
-| Oct 21–23 | Pick the idea. Sandbox accounts and apps. Install AI Toolkit + APIMatic plugin. Run the week-1 feasibility checks in IDEAS.md |
-| Oct 24–31 | Core money flows end to end in the sandbox (create → approve → webhook → state). Agent with PayPal tools |
-| Nov 1–5 | Product UI, sponsor component, approval gate, unhappy paths (failures, refunds) |
-| Nov 6–8 | Deploy (Render). Seed and demo mode. README with judge setup and test logins. **Feature freeze** |
-| Nov 9–10 | Script, record and edit the demo video (<3:00). Write the Devpost story and tools list |
-| Nov 11 | Buffer, final checks, submit (with owner approval) |
-| Nov 12, 12:00 pm PT | **Hard deadline** |
+| Oct 21–23 | Sandbox accounts and app; run `scripts/sandbox-check.mjs` (token, authorize→void/capture, payouts, Log In with PayPal, transaction search); install AI Toolkit and APIMatic plugin |
+| Oct 24–28 | Payment Gate + state machine + webhooks end to end (hold → void, hold → capture → payout) |
+| Oct 29–Nov 2 | Check-in agent (chat, screenshot, voicemail), risk engine with hard rules, "Is this really you?" verification |
+| Nov 3–5 | Family dashboard, Judge Mode (scenarios, seed/reset, skip timer), live PayPal status panel, aftercare text |
+| Nov 6 | **Feature freeze**, deployed on Render |
+| Nov 7–10 | Rehearse, record, edit, publish the video; README and Devpost text |
+| Nov 11 | Buffer, then submit (with owner's approval) |

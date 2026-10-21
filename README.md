@@ -1,13 +1,24 @@
-# PayPal AI Hackathon Project
+# HoldOn
 
-> 🚧 **Ideation stage.** This repository is our entry for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (deadline Nov 12, 2026). The project name, pitch, demo and setup instructions will appear here once the idea is chosen.
+**A pause between "send" and "gone."** HoldOn protects people from scams where *they* are tricked into sending money (voice-clone "grandson in trouble" calls, fake CRA threats, romance and tech-support scams). The payment is **held through PayPal**, not sent, until an AI check-in and the person's trusted family confirm it's safe. If it's a scam, the hold is voided and the money never leaves.
+
+> 🚧 In development for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (deadline Nov 12, 2026). Setup instructions, the hosted demo link and the demo video will appear here.
+
+## How it works (short version)
+
+1. **Hold, don't send:** PayPal Orders with `intent=AUTHORIZE` reserve the funds without moving them.
+2. **AI check-in:** a friendly conversation that reads the scam message or voicemail and spots red flags.
+3. **"Is this really you?":** the family member the story names must confirm by logging in with *their own* PayPal. A voice clone can't do that.
+4. **Release or void:** approved payments are captured and paid out only to the verified person; everything else is voided.
 
 ## Documents
 
-- [IDEAS.md](IDEAS.md): candidate ideas, scored against the judging criteria
-- [ARCHITECTURE.md](ARCHITECTURE.md): architecture, stack and timeline
-- [docs/HACKATHON.md](docs/HACKATHON.md): hackathon requirements, judging, prizes, sponsors
-- [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): official webinar transcripts and takeaways
+- [IDEAS.md](IDEAS.md): product spec, prior art, scoring
+- [ARCHITECTURE.md](ARCHITECTURE.md): architecture, money flow, safety rules, timeline
+- [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md): demo video script and judge access plan
+- [docs/HACKATHON.md](docs/HACKATHON.md): hackathon requirements, judging, prizes
+- [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): official webinar transcripts
+- [scripts/README.md](scripts/README.md): PayPal sandbox feasibility checks
 - [RULES.md](RULES.md) / [CLAUDE.md](CLAUDE.md): contributor and AI-agent rules
 
 ## License

@@ -29,7 +29,7 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 
 ## Current status (updated 2026-10-22)
 
-**Phase:** app foundation built. Next: the AI check-in agent (it plugs into `PaymentGate.assess`), verification-link delivery (outbox), the family dashboard with sign-in, Judge Mode and the PayPal live status panel. Feature freeze Nov 6.
+**Phase:** app foundation and AI check-in built. Next: Nana's send page, the family dashboard with sign-in, Judge Mode ("Ethan's phone" reads the outbox) and the PayPal live status panel; then email delivery for the outbox. Feature freeze Nov 6.
 
 **Built (2026-10-22), all checks pass (`npm test`, `npm run typecheck`, `npm run lint`, `npm run build`):**
 - Next.js 16 app (App Router, Tailwind, Cache Components on). DB-reading pages call `await connection()` inside `<Suspense>`.
@@ -38,6 +38,8 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - `src/lib/risk/rules.ts`: hard red flags and `combineRisk` (model can raise risk, never lower the rule floor; no verdict means at least MEDIUM).
 - `src/lib/gate/`: state machine plus the Payment Gate, the only code that changes hold state or moves money. Row-locked transitions with audit rows, fixed per-hold request IDs, `sweep()` for cooling-off, expiry voids and retries.
 - Routes: create hold, PayPal return/cancel, assess (rules only for now), webhook, cron sweep, Judge skip-cooling-off, Log In with PayPal `/callback`, and the "Is this really you?" page at `/verify/[token]`.
+- AI check-in (2026-10-22): `src/lib/ai/` (Gemini and Groq JSON clients with fallback, check-in agent, Whisper transcription), `src/lib/checkin/service.ts`, chat UI on `/holds/[id]`, routes under `/api/holds/[id]/checkin`. The agent asks scripted scam-exposing questions (AI-phrased, script fallback), reads screenshots and voicemails, and returns a structured verdict that only reaches the gate. Hard rules see the person's answers, the story and the evidence, never the agent's questions. Instructions aimed at the AI are a HIGH red flag. Verification links are written to the `outbox` table, addressed only to the saved contact.
+- Not live-tested: the Gemini and Groq calls (request shapes checked against the official SDK types; no keys or Groq access in the cloud session). LLM_PROVIDER=anthropic is not implemented. Known trade-off: hard rules can match negated answers ("they didn't say keep it secret"), which raises risk; this is the safe direction.
 - Unverified in the sandbox: payouts with `recipient_type: PAYPAL_ID` (family payouts go to the verified payer_id), and the full app flow against real PayPal.
 
 **Verified in the PayPal sandbox (Canada, CAD)** with `scripts/sandbox-check.mjs`:

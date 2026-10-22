@@ -135,7 +135,7 @@ export const checkins = pgTable(
     verdict: jsonb(),
     createdAt: createdAt(),
   },
-  (t) => [index("checkins_hold_idx").on(t.holdId)],
+  (t) => [uniqueIndex("checkins_hold_uq").on(t.holdId)],
 );
 
 export const verifications = pgTable(
@@ -197,3 +197,24 @@ export type Hold = typeof holds.$inferSelect;
 export type Member = typeof members.$inferSelect;
 export type Payee = typeof payees.$inferSelect;
 export type Verification = typeof verifications.$inferSelect;
+
+// Messages to circle members, written by the gate when it needs someone (a verification link).
+// Delivery (email) is a separate step; Judge Mode reads this table to show the family member's phone.
+export const outbox = pgTable(
+  "outbox",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    holdId: uuid("hold_id").references(() => holds.id),
+    memberId: uuid("member_id").notNull().references(() => members.id),
+    channel: text().notNull(),
+    to: text(),
+    subject: text().notNull(),
+    body: text().notNull(),
+    link: text(),
+    createdAt: createdAt(),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+  },
+  (t) => [index("outbox_member_idx").on(t.memberId, t.createdAt)],
+);
+
+export type Checkin = typeof checkins.$inferSelect;

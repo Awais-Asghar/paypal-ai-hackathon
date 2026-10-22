@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { CheckinChat } from "@/components/checkin-chat";
 import { StatusCard } from "@/components/status-card";
 import { getDb } from "@/lib/db";
 import { holds, payees } from "@/lib/db/schema";
@@ -17,6 +18,7 @@ async function HoldStatus({ params }: { params: Promise<{ id: string }> }) {
   return (
     <>
       <StatusCard state={hold.state} amount={`${money(hold.amountCents, hold.currency)} to ${payee.label}`} />
+      {(hold.state === "HELD" || hold.state === "ASSESSING") && <CheckinChat holdId={hold.id} />}
       {hold.riskReasons && hold.riskReasons.length > 0 && (
         <section className="rounded-2xl border border-stone-200 bg-white p-5">
           <h3 className="font-semibold text-stone-900">Why we paused</h3>

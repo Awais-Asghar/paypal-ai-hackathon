@@ -10,6 +10,7 @@ export type RedFlag =
   | "gift_cards_crypto"
   | "urgent_emergency"
   | "authority_threat"
+  | "suspicious_instructions"
   | "new_payee";
 
 export const RED_FLAG_LABELS: Record<RedFlag, string> = {
@@ -19,6 +20,7 @@ export const RED_FLAG_LABELS: Record<RedFlag, string> = {
   gift_cards_crypto: "Gift cards or crypto",
   urgent_emergency: "Urgent emergency (bail, hospital, arrest)",
   authority_threat: "Threat from a 'government' caller",
+  suspicious_instructions: "The message tries to give orders to the safety check",
   new_payee: "New payee",
 };
 
@@ -29,6 +31,7 @@ const FLAG_FLOOR: Record<RedFlag, RiskLevel> = {
   gift_cards_crypto: "HIGH",
   urgent_emergency: "HIGH",
   authority_threat: "HIGH",
+  suspicious_instructions: "HIGH",
   new_payee: "MEDIUM",
 };
 
@@ -39,6 +42,8 @@ const GIFT_CRYPTO = /gift ?cards?|itunes|google ?play card|steam card|apple card
 const URGENT = /urgent|right (now|away)|immediately|\basap\b|hurry|quick(ly)?|tonight|before (it'?s too late|tomorrow)|no time/i;
 const EMERGENCY = /\bbail\b|jail|arrest(ed)?|police|hospital|accident|\bcourt\b|lawyer|surgery|kidnap/i;
 const AUTHORITY = /\bcra\b|canada revenue|revenue agency|\birs\b|immigration|\brcmp\b|service canada|tax (office|department)/i;
+// Text aimed at the AI check rather than at a person is itself a scam signal.
+const INJECTION = /ignore (all |any |the )?(previous |prior |above )?(instructions|rules)|system prompt|you are (now )?(an? )?(ai|assistant|language model)|(mark|rate|classify) (this|it|the payment) (as )?(low|safe)|risk\s*[:=]\s*"?low/i;
 const THREAT = /arrest|warrant|deport|fine|penalt(y|ies)|suspend|jail|police|lawsuit|seized?/i;
 
 export type RuleInput = {
@@ -58,6 +63,7 @@ export function detectRedFlags(input: RuleInput): RedFlag[] {
   if (GIFT_CRYPTO.test(t)) flags.add("gift_cards_crypto");
   if (URGENT.test(t) && EMERGENCY.test(t)) flags.add("urgent_emergency");
   if (AUTHORITY.test(t) && THREAT.test(t)) flags.add("authority_threat");
+  if (INJECTION.test(t)) flags.add("suspicious_instructions");
 
   // Structural checks: a family story must pay that family member's own saved account.
   if (input.purpose === "family" && (!input.payee.memberId || (input.namedMemberId && input.payee.memberId !== input.namedMemberId))) {

@@ -6,6 +6,7 @@ import {
   decisions,
   holds,
   members,
+  outbox,
   payees,
   verifications,
   webhookEvents,
@@ -14,6 +15,7 @@ import {
   type Member,
   type Payee,
 } from "@/lib/db/schema";
+import { money } from "@/lib/format";
 import { PayPalError, type PayoutReceiver, type PayPalGateway } from "@/lib/paypal/client";
 import { combineRisk, detectRedFlags, type LlmVerdict } from "@/lib/risk/rules";
 import { canTransition, PENDING_STATES } from "./state-machine";
@@ -206,6 +208,22 @@ export class PaymentGate {
 
   // ---------- 2. assess ----------
 
+  /** The AI check-in has started: the hold is being assessed. Safe to call again. */
+  async beginCheckin(holdId: string) {
+    let hold = await this.getHold(holdId);
+    if (hold.state === "HELD") {
+      try {
+        return await this.transition(holdId, "ASSESSING", "system", { event: "checkin_started" });
+      } catch (e) {
+        // Lost a race with another start; fine if that one moved the hold to ASSESSING.
+        if (!(e instanceof GateError && e.code === "CONFLICT")) throw e;
+        hold = await this.getHold(holdId);
+      }
+    }
+    if (hold.state !== "ASSESSING") throw new GateError("CONFLICT", `Hold is ${hold.state}, not ready for a check-in`);
+    return hold;
+  }
+
   /**
    * Combines the hard rules with the check-in agent's verdict and routes the hold:
    * LOW goes out now, MEDIUM waits out the cooling-off timer, HIGH needs verification.
@@ -236,7 +254,14 @@ export class PaymentGate {
     }
     const verifying = await this.transition(holdId, "VERIFYING", "system", detail, riskPatch);
     const target = hold.namedMemberId ?? payee.memberId;
-    const verification = target ? await this.startVerification(holdId, target) : null;
+    let verification = null;
+    try {
+      verification = target ? await this.startVerification(holdId, target) : null;
+    } catch (e) {
+      // No one can verify (say, no PayPal identity saved): the hold stays in VERIFYING for the trusted circle to decide.
+      if (!(e instanceof GateError && e.code === "REFUSED")) throw e;
+      await this.audit(holdId, "system", { event: "verification_unavailable", error: e.message });
+    }
     return { hold: verifying, verification };
   }
 
@@ -253,9 +278,27 @@ export class PaymentGate {
     const token = randomBytes(32).toString("base64url");
     const ttlEnd = this.now().getTime() + hours(this.config.verificationTtlHours);
     const expiresAt = new Date(Math.min(ttlEnd, hold.expiresAt?.getTime() ?? ttlEnd));
-    await this.db.insert(verifications).values({ holdId, memberId, tokenHash: hashToken(token), expiresAt, createdAt: this.now() });
-    await this.audit(holdId, "system", { event: "verification_sent", memberId, to: member.contactEmail ?? member.contactPhone });
-    return { token, url: `${this.config.appBaseUrl}/verify/${token}`, member: { id: member.id, name: member.name, contactEmail: member.contactEmail } };
+    const url = `${this.config.appBaseUrl}/verify/${token}`;
+    const [sender] = await this.db.select().from(members).where(and(eq(members.circleId, hold.circleId), eq(members.role, "protected")));
+    const senderName = sender?.name.split(" ")[0] ?? "A family member";
+    const amount = money(hold.amountCents, hold.currency);
+    const to = member.contactEmail ?? member.contactPhone;
+
+    await this.db.transaction(async (t) => {
+      await t.insert(verifications).values({ holdId, memberId, tokenHash: hashToken(token), expiresAt, createdAt: this.now() });
+      await t.insert(outbox).values({
+        holdId,
+        memberId,
+        channel: member.contactEmail ? "email" : "sms",
+        to,
+        subject: `Is this really you? ${senderName} is about to send ${amount}`,
+        body: `${senderName} is about to send ${amount}. Someone told them it was for you. The money is on hold until you answer. Log in with your own PayPal to confirm.`,
+        link: url,
+        createdAt: this.now(),
+      });
+      await t.insert(auditLog).values({ holdId, actor: "system", detail: { event: "verification_sent", memberId, to }, at: this.now() });
+    });
+    return { token, url, member: { id: member.id, name: member.name, contactEmail: member.contactEmail } };
   }
 
   async getVerification(token: string) {

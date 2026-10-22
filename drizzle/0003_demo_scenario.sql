@@ -1,0 +1,1 @@
+ALTER TABLE "holds" ADD COLUMN "demo_scenario" text;

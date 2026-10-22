@@ -47,6 +47,7 @@ export async function seedDemo(db: Db, env: SeedEnv) {
       { circleId: circle.id, label: "Ethan Collins (grandson)", paypalEmail: env.ethanEmail ?? "ethan@example.com", memberId: ethan.id, known: true },
       { circleId: circle.id, label: "Robert Hayes (landlord)", paypalEmail: env.robertEmail ?? "robert@example.com", known: true },
       { circleId: circle.id, label: "Officer Daniels (bail office)", paypalEmail: "bail-office@example.com", known: false },
+      { circleId: circle.id, label: "CRA Tax Payment Office", paypalEmail: "cra-payments@example.com", known: false },
     ]);
     return { circleId: circle.id, created: true, protectedMemberId: margaret.id };
   });

@@ -12,7 +12,7 @@ async function post(url: string, body?: BodyInit, json = true) {
   return data;
 }
 
-export function CheckinChat({ holdId }: { holdId: string }) {
+export function CheckinChat({ holdId, sample }: { holdId: string; sample?: { label: string } }) {
   const router = useRouter();
   const base = `/api/holds/${holdId}/checkin`;
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -54,11 +54,16 @@ export function CheckinChat({ holdId }: { holdId: string }) {
       setDone(data.done);
     });
 
-  const attach = (file: File) =>
+  const attach = (file: File | "sample") =>
     run(async () => {
-      const form = new FormData();
-      form.append("file", file);
-      const data = await post(`${base}/evidence`, form, false);
+      let data;
+      if (file === "sample") {
+        data = await post("/api/judge/sample-evidence", JSON.stringify({ holdId }));
+      } else {
+        const form = new FormData();
+        form.append("file", file);
+        data = await post(`${base}/evidence`, form, false);
+      }
       const note = data.read ? `I've read your ${data.kind === "voicemail" ? "voicemail" : "screenshot"}. Thank you.` : data.message;
       setTurns((t) => [...t, { role: "user", text: `(Added a ${data.kind ?? "file"})` }, { role: "assistant", text: note }]);
     });
@@ -125,6 +130,12 @@ export function CheckinChat({ holdId }: { holdId: string }) {
           }}
         />
       </label>
+
+      {sample && (
+        <button onClick={() => attach("sample")} disabled={busy} className="text-center text-emerald-800 underline underline-offset-4 disabled:opacity-50">
+          Share the {sample.label} (demo)
+        </button>
+      )}
 
       <button
         onClick={finish}

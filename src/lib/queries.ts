@@ -1,0 +1,32 @@
+import "server-only";
+import { asc, desc, eq } from "drizzle-orm";
+import { getDb } from "@/lib/db";
+import { circles, holds, members, outbox, payees } from "@/lib/db/schema";
+
+/** The demo runs one circle (seeded by `npm run seed`). */
+export async function demoCircle() {
+  const db = await getDb();
+  const [circle] = await db.select().from(circles).orderBy(asc(circles.createdAt)).limit(1);
+  if (!circle) return null;
+  const [circleMembers, circlePayees] = await Promise.all([
+    db.select().from(members).where(eq(members.circleId, circle.id)).orderBy(asc(members.createdAt)),
+    db.select().from(payees).where(eq(payees.circleId, circle.id)).orderBy(asc(payees.createdAt)),
+  ]);
+  return { circle, members: circleMembers, payees: circlePayees };
+}
+
+export async function recentHolds(circleId: string, limit = 12) {
+  const db = await getDb();
+  return db
+    .select({ hold: holds, payeeLabel: payees.label })
+    .from(holds)
+    .innerJoin(payees, eq(payees.id, holds.payeeId))
+    .where(eq(holds.circleId, circleId))
+    .orderBy(desc(holds.createdAt))
+    .limit(limit);
+}
+
+export async function messagesFor(memberId: string) {
+  const db = await getDb();
+  return db.select().from(outbox).where(eq(outbox.memberId, memberId)).orderBy(desc(outbox.createdAt)).limit(20);
+}

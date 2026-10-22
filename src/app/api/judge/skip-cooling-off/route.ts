@@ -1,14 +1,25 @@
 import { z } from "zod";
-import { getGate } from "@/lib/gate";
+import { backTo, judgeOff } from "@/lib/demo/guard";
+import { GateError, getGate } from "@/lib/gate";
 import { errorResponse } from "@/lib/http";
 
-// Judge Mode only (JUDGE_MODE=1): end a 24-hour cooling-off timer now. Recorded in the audit log as "judge".
+// Judge Mode only: end a 24-hour cooling-off timer now. Recorded in the audit log as "judge".
+// Accepts JSON ({ holdId }) or a form post from the Judge page.
 export async function POST(request: Request) {
-  if (process.env.JUDGE_MODE !== "1") return Response.json({ error: "Judge Mode is off" }, { status: 404 });
+  const off = judgeOff();
+  if (off) return off;
+  const isForm = request.headers.get("content-type")?.includes("form") ?? false;
   try {
-    const { holdId } = z.object({ holdId: z.uuid() }).parse(await request.json());
-    const hold = await (await getGate()).skipCoolingOff(holdId);
-    return Response.json({ state: hold.state });
+    const raw = isForm ? Object.fromEntries(await request.formData()) : await request.json();
+    const { holdId } = z.object({ holdId: z.uuid() }).parse(raw);
+    try {
+      const hold = await (await getGate()).skipCoolingOff(holdId);
+      if (!isForm) return Response.json({ state: hold.state });
+    } catch (e) {
+      if (e instanceof GateError || !isForm) throw e;
+      console.error("Release after skipping cooling-off failed; sweeper will retry", e);
+    }
+    return backTo(request, "/judge");
   } catch (e) {
     return errorResponse(e);
   }

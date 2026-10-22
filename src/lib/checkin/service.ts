@@ -82,17 +82,24 @@ export class CheckinService {
 
   async addEvidence(holdId: string, kind: Evidence["kind"], file: File) {
     await this.requireAssessing(holdId);
-    const row = await this.load(holdId);
     const text =
       kind === "voicemail"
         ? await this.transcribe(file, file.name || "voicemail")
         : await this.agent.readScreenshot({ mimeType: file.type, base64: Buffer.from(await file.arrayBuffer()).toString("base64") });
     if (!text) return null;
+    return this.addEvidenceText(holdId, kind, text);
+  }
+
+  /** Evidence that is already text (Judge Mode samples, or a message the person pasted). */
+  async addEvidenceText(holdId: string, kind: Evidence["kind"], text: string) {
+    await this.requireAssessing(holdId);
+    const row = await this.load(holdId);
+    const clean = text.trim().slice(0, 8000);
     await this.db.transaction(async (t) => {
       const [locked] = await t.select().from(checkins).where(eq(checkins.id, row.id)).for("update");
-      await t.update(checkins).set({ evidence: [...locked.evidence, { kind, ref: text }] }).where(eq(checkins.id, row.id));
+      await t.update(checkins).set({ evidence: [...locked.evidence, { kind, ref: clean }] }).where(eq(checkins.id, row.id));
     });
-    return text;
+    return clean;
   }
 
   /** Gets the AI verdict and lets the gate decide. No verdict (AI down) is passed on as null: the gate fails safe. */

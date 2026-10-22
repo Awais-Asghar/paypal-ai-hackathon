@@ -137,6 +137,7 @@ export class PaymentGate {
     purpose: Hold["purpose"];
     namedMemberId?: string | null;
     story?: string | null;
+    demoScenario?: string | null;
   }) {
     if (!Number.isInteger(input.amountCents) || input.amountCents <= 0) throw new GateError("INVALID", "Amount must be a positive number of cents");
     const payee = await this.getPayee(input.payeeId);
@@ -157,6 +158,7 @@ export class PaymentGate {
           purpose: input.purpose,
           namedMemberId: input.namedMemberId ?? null,
           story: input.story ?? null,
+          demoScenario: input.demoScenario ?? null,
           state: "DRAFT",
           createdAt: this.now(),
           updatedAt: this.now(),

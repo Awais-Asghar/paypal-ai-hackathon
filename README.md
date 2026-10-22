@@ -20,6 +20,8 @@ Needs Node.js 22+. No database to install: PGlite stores data in `./.pglite`.
 3. `npm run seed` creates the database and the demo family.
 4. `npm run dev`, then open http://127.0.0.1:3000 (use `127.0.0.1`, not `localhost`, to match the Log In with PayPal return URL).
 
+Set `JUDGE_MODE=1` in `.env` and open http://127.0.0.1:3000/judge for the guided demo: three scenarios (voice-clone grandparent scam, fake CRA threat, normal rent), Ethan's phone, a live PayPal status column, "run the scheduler now" and "reset demo". Nana's send page is at `/send`.
+
 Checks: `npm test`, `npm run typecheck`, `npm run lint`.
 
 ## Documents

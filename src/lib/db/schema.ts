@@ -100,6 +100,8 @@ export const holds = pgTable(
     // The family member the story is about ("it's me, Ethan"). Drives the "Is this really you?" check.
     namedMemberId: uuid("named_member_id").references(() => members.id),
     story: text(),
+    // Judge Mode only: which demo scenario created this hold (src/lib/demo/scenarios.ts).
+    demoScenario: text("demo_scenario"),
     state: holdState().notNull().default("DRAFT"),
     risk: riskLevel(),
     redFlags: jsonb("red_flags").$type<string[]>(),

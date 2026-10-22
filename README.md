@@ -11,6 +11,17 @@
 3. **"Is this really you?":** the family member the story names must confirm by logging in with *their own* PayPal. A voice clone can't do that.
 4. **Release or void:** approved payments are captured and paid out only to the verified person; everything else is voided.
 
+## Run it locally
+
+Needs Node.js 22+. No database to install: PGlite stores data in `./.pglite`.
+
+1. `npm install`
+2. `cp .env.example .env` and fill in your PayPal sandbox app credentials and sandbox account emails ([setup guide](docs/PAYPAL_SETUP.md)).
+3. `npm run seed` creates the database and the demo family.
+4. `npm run dev`, then open http://127.0.0.1:3000 (use `127.0.0.1`, not `localhost`, to match the Log In with PayPal return URL).
+
+Checks: `npm test`, `npm run typecheck`, `npm run lint`.
+
 ## Documents
 
 - [docs/PROJECT.md](docs/PROJECT.md): what SureSend is, the problem, how it works, prior art

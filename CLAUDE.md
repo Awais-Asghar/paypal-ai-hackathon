@@ -27,9 +27,18 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - **Deliverables:** public repo with a LICENSE, working demo (hosted URL or full run instructions), a YouTube demo video under 3 minutes, and a written description plus tools list.
 - **Writing style:** no emojis and no em dashes anywhere (docs/RULES.md §7).
 
-## Current status (updated 2026-10-21)
+## Current status (updated 2026-10-22)
 
-**Phase:** setup and feasibility are done. Next: build the app (Next.js project, Drizzle schema, Payment Gate with the safety rules), then the AI check-in, the "Is this really you?" page, the family dashboard and Judge Mode. Feature freeze Nov 6.
+**Phase:** app foundation built. Next: the AI check-in agent (it plugs into `PaymentGate.assess`), verification-link delivery (outbox), the family dashboard with sign-in, Judge Mode and the PayPal live status panel. Feature freeze Nov 6.
+
+**Built (2026-10-22), all checks pass (`npm test`, `npm run typecheck`, `npm run lint`, `npm run build`):**
+- Next.js 16 app (App Router, Tailwind, Cache Components on). DB-reading pages call `await connection()` inside `<Suspense>`.
+- Drizzle schema and migration in `drizzle/`; `src/lib/db` picks PGlite or node-postgres from `DATABASE_URL`. `npm run seed` creates the Collins family circle.
+- `src/lib/paypal/client.ts`: sandbox-only REST client (token cache, refresh on 401, required `PayPal-Request-Id`, webhook signature postback, Log In with PayPal).
+- `src/lib/risk/rules.ts`: hard red flags and `combineRisk` (model can raise risk, never lower the rule floor; no verdict means at least MEDIUM).
+- `src/lib/gate/`: state machine plus the Payment Gate, the only code that changes hold state or moves money. Row-locked transitions with audit rows, fixed per-hold request IDs, `sweep()` for cooling-off, expiry voids and retries.
+- Routes: create hold, PayPal return/cancel, assess (rules only for now), webhook, cron sweep, Judge skip-cooling-off, Log In with PayPal `/callback`, and the "Is this really you?" page at `/verify/[token]`.
+- Unverified in the sandbox: payouts with `recipient_type: PAYPAL_ID` (family payouts go to the verified payer_id), and the full app flow against real PayPal.
 
 **Verified in the PayPal sandbox (Canada, CAD)** with `scripts/sandbox-check.mjs`:
 - Token and scopes, Transaction Search, Webhooks API

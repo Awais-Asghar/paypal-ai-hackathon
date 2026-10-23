@@ -27,9 +27,9 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - **Deliverables:** public repo with a LICENSE, working demo (hosted URL or full run instructions), a YouTube demo video under 3 minutes, and a written description plus tools list.
 - **Writing style:** no emojis and no em dashes anywhere (docs/RULES.md §7).
 
-## Current status (updated 2026-10-22)
+## Current status (updated 2026-10-23)
 
-**Phase:** foundation, AI check-in, Send page and Judge Mode built (PR #1). Next: run the full flow against the real sandbox and live Gemini/Groq on the owner's machine, then the family dashboard with sign-in, email delivery for the outbox, the aftercare text, and deployment to Render. Feature freeze Nov 6.
+**Phase:** foundation, AI check-in, Send page and Judge Mode built (PR #1, reviewed and fast-forwarded into local `main` on 2026-10-23). Next: run the full flow against the real sandbox on the owner's machine, then the family dashboard with sign-in, email delivery for the outbox, the aftercare text, and deployment to Render. Feature freeze Nov 6.
 
 **Built (2026-10-22), all checks pass (`npm test`, `npm run typecheck`, `npm run lint`, `npm run build`):**
 - Next.js 16 app (App Router, Tailwind, Cache Components on). DB-reading pages call `await connection()` inside `<Suspense>`.
@@ -40,8 +40,10 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - Routes: create hold, PayPal return/cancel, assess (rules only for now), webhook, cron sweep, Judge skip-cooling-off, Log In with PayPal `/callback`, and the "Is this really you?" page at `/verify/[token]`.
 - AI check-in (2026-10-22): `src/lib/ai/` (Gemini and Groq JSON clients with fallback, check-in agent, Whisper transcription), `src/lib/checkin/service.ts`, chat UI on `/holds/[id]`, routes under `/api/holds/[id]/checkin`. The agent asks scripted scam-exposing questions (AI-phrased, script fallback), reads screenshots and voicemails, and returns a structured verdict that only reaches the gate. Hard rules see the person's answers, the story and the evidence, never the agent's questions. Instructions aimed at the AI are a HIGH red flag. Verification links are written to the `outbox` table, addressed only to the saved contact.
 - Send page and Judge Mode (2026-10-22): `/send` (Nana's form; `?scenario=` prefills it in Judge Mode), `/judge` (scenarios, sandbox logins, family phones, live PayPal authorization status, run scheduler, reset demo), `/judge/phone/[memberId]` (reads the outbox), "Stop this payment" on `/holds/[id]`. Scenarios live in `src/lib/demo/scenarios.ts`. `JUDGE_MODE` is read per request (inside Suspense), never at build time. Reset voids open authorizations through the gate first and keeps any hold PayPal would not void.
-- Not live-tested: the Gemini and Groq calls (request shapes checked against the official SDK types; no keys or Groq access in the cloud session). LLM_PROVIDER=anthropic is not implemented. Known trade-off: hard rules can match negated answers ("they didn't say keep it secret"), which raises risk; this is the safe direction.
-- Unverified in the sandbox: payouts with `recipient_type: PAYPAL_ID` (family payouts go to the verified payer_id), and the full app flow against real PayPal.
+- Live-tested on the owner's machine (2026-10-23) with the branch's own code: Groq `openai/gpt-oss-120b` (about 1 s per call; grandparent scam HIGH, rent LOW, sensible follow-up questions), Groq Whisper (sample voicemail transcribed word for word in 0.5 s), and Gemini `gemini-flash-lite-latest` (chat, verdicts and screenshot reading of a fake CRA text, 1 to 3 s). `gemini-3.8-flash` returned 503 "high demand" on both keys that day, so with `LLM_PROVIDER=gemini` every call waited out two 25 s timeouts before Groq answered. Consider `LLM_PROVIDER=groq` (Groq first for text; screenshots still go to Gemini, since Groq has no vision) or `GEMINI_MODEL=gemini-flash-lite-latest`.
+- LLM_PROVIDER=anthropic is not implemented. Known trade-off: hard rules can match negated answers ("they didn't say keep it secret"), which raises risk; this is the safe direction.
+- Verified in the sandbox (2026-10-23): payouts with `recipient_type: PAYPAL_ID` to Ethan's payer_id (batch `E25Z6ST7SP3UQ`, 1.00 CAD, SUCCESS). Not yet run: the full app flow against real PayPal.
+- Tests need `hookTimeout: 30_000` (in `vitest.config.mts`): each test boots an in-memory PGlite, and on Windows that setup can pass the 10 s default when files run in parallel.
 
 **Verified in the PayPal sandbox (Canada, CAD)** with `scripts/sandbox-check.mjs`:
 - Token and scopes, Transaction Search, Webhooks API

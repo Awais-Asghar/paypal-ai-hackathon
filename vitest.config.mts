@@ -8,5 +8,6 @@ export default defineConfig({
       "server-only": path.resolve(import.meta.dirname, "node_modules/server-only/empty.js"),
     },
   },
-  test: { environment: "node", testTimeout: 30_000 },
+  // Each test boots an in-memory PGlite; on slower machines that setup alone can pass the 10s hook default.
+  test: { environment: "node", testTimeout: 30_000, hookTimeout: 30_000 },
 });

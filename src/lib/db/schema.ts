@@ -220,3 +220,22 @@ export const outbox = pgTable(
 );
 
 export type Checkin = typeof checkins.$inferSelect;
+
+export type ReportBody = {
+  summary: string;
+  whatHappened: string[];
+  reportText: string;
+  nextSteps: string[];
+};
+
+// Aftercare: one scam report draft per hold, written by the AI (or a template when no model answers).
+// Amounts, dates and the outcome are never stored here; the page reads them from the hold itself.
+export const reports = pgTable("reports", {
+  id: uuid().primaryKey().defaultRandom(),
+  holdId: uuid("hold_id").notNull().unique("reports_hold_uq").references(() => holds.id),
+  body: jsonb().$type<ReportBody>().notNull(),
+  source: text().notNull(),
+  createdAt: createdAt(),
+});
+
+export type Report = typeof reports.$inferSelect;

@@ -29,6 +29,13 @@
       "when": 1792712207240,
       "tag": "0003_demo_scenario",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792814751314,
+      "tag": "0004_reports",
+      "breakpoints": true
     }
   ]
 }

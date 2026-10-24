@@ -1,6 +1,6 @@
 import { inArray, notInArray } from "drizzle-orm";
 import type { Db } from "@/lib/db";
-import { auditLog, checkins, decisions, holds, outbox, verifications } from "@/lib/db/schema";
+import { auditLog, checkins, decisions, holds, outbox, reports, verifications } from "@/lib/db/schema";
 import type { PaymentGate } from "@/lib/gate/payment-gate";
 
 /**
@@ -21,6 +21,7 @@ export async function resetDemo(db: Db, gate: PaymentGate) {
   const removable = (await db.select({ id: holds.id }).from(holds)).map((h) => h.id).filter((id) => !failed.includes(id));
   if (removable.length > 0) {
     await db.transaction(async (t) => {
+      await t.delete(reports).where(inArray(reports.holdId, removable));
       await t.delete(outbox).where(inArray(outbox.holdId, removable));
       await t.delete(decisions).where(inArray(decisions.holdId, removable));
       await t.delete(verifications).where(inArray(verifications.holdId, removable));

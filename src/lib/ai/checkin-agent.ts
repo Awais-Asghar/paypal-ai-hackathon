@@ -47,12 +47,24 @@ const TurnSchema = z.object({
 
 export const SCAM_TYPES = ["grandparent_family_emergency", "government_impersonation", "romance", "tech_support", "investment", "purchase", "none", "other"] as const;
 
+export const SCAM_TYPE_LABELS: Record<(typeof SCAM_TYPES)[number], string> = {
+  grandparent_family_emergency: "Grandparent or family emergency scam",
+  government_impersonation: "Government impersonation (CRA, immigration, police)",
+  romance: "Romance scam",
+  tech_support: "Tech support scam",
+  investment: "Investment scam",
+  purchase: "Purchase scam",
+  none: "No scam pattern found",
+  other: "Other scam",
+};
+
 const VerdictSchema = z.object({
   risk: z.enum(RISK_LEVELS),
   scam_type: z.enum(SCAM_TYPES),
   red_flags: z.array(z.string()).describe("Short labels for warning signs actually present"),
   reasons_plain: z.array(z.string()).describe("One to three short sentences for the sender, kind and plain, no jargon"),
-  family_summary: z.string().describe("Two sentences for the family: what happened and why it was paused or allowed"),
+  // The outcome changes after this is written (Ethan may stop it later), so the page adds it from the hold's state.
+  family_summary: z.string().describe("Two sentences for the family: who asked for the money, how, and any warning signs. Don't say what happens to the payment"),
 });
 export type CheckinVerdict = z.infer<typeof VerdictSchema>;
 

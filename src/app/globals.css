@@ -1,19 +1,45 @@
 @import "tailwindcss";
 
-:root {
-  --background: #fafaf9;
-  --foreground: #1c1917;
-}
+/*
+ * SureSend design tokens. Warm "paper" and ink for calm and trust; colors carry meaning:
+ * brand (teal) = safe and trusted, alert (terracotta) = a scam stopped, wait (amber) = on hold,
+ * sent (blue) = money delivered, paypal = actions that go to PayPal.
+ * Text colors meet WCAG AA on paper and surface.
+ */
+@theme {
+  --color-paper: #faf8f3;
+  --color-surface: #ffffff;
+  --color-sunk: #f2eee6;
+  --color-line: #e3dfd5;
+  --color-line-strong: #c9c3b6;
+  --color-ink: #141416;
+  --color-ink-2: #3a3a40;
+  --color-muted: #66666b;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-brand: #2f5f63;
+  --color-brand-strong: #1f4346;
+  --color-brand-soft: #e4eeec;
+  --color-alert: #a8391f;
+  --color-alert-soft: #f8e8e3;
+  --color-wait: #7a5200;
+  --color-wait-soft: #fbf0d9;
+  --color-sent: #1f4e79;
+  --color-sent-soft: #e6edf5;
+  --color-paypal: #0070ba;
+  --color-paypal-strong: #005ea6;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, Menlo, monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 2px;
 }

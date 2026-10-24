@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { CheckinChat } from "@/components/checkin-chat";
 import { StatusCard } from "@/components/status-card";
+import { canReport } from "@/lib/aftercare";
 import { getDb } from "@/lib/db";
 import { holds, payees } from "@/lib/db/schema";
 import { isScenarioId, judgeMode, SCENARIOS } from "@/lib/demo/scenarios";
@@ -49,6 +50,12 @@ async function HoldStatus({ params }: { params: Promise<{ id: string }> }) {
             ))}
           </ul>
         </section>
+      )}
+
+      {canReport(hold) && (
+        <Link href={`/holds/${hold.id}/report`} className="rounded-xl border-2 border-stone-300 bg-white px-5 py-4 text-center text-lg font-semibold text-stone-900">
+          Report this scam attempt
+        </Link>
       )}
 
       {(hold.state === "HELD" || hold.state === "ASSESSING" || hold.state === "COOLING_OFF" || hold.state === "VERIFYING") && (

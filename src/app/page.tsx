@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const STEPS = [
   ["Hold, don't send", "Your payment is authorized in PayPal, so the money is reserved but not moved."],
   ["A friendly check-in", "SureSend asks a few gentle questions and reads the message or voicemail for scam signs."],
@@ -26,6 +28,17 @@ export default function Home() {
           </li>
         ))}
       </ol>
+      <nav className="flex flex-wrap gap-3">
+        <Link href="/judge" className="rounded-xl bg-emerald-700 px-5 py-3 text-lg font-semibold text-white">
+          Try the demo
+        </Link>
+        <Link href="/send" className="rounded-xl border-2 border-stone-300 bg-white px-5 py-3 text-lg font-semibold text-stone-900">
+          Send money as Nana
+        </Link>
+        <Link href="/family" className="rounded-xl border-2 border-stone-300 bg-white px-5 py-3 text-lg font-semibold text-stone-900">
+          Family dashboard
+        </Link>
+      </nav>
       <p className="text-sm text-stone-500">Built for the PayPal AI Hackathon. Runs on the PayPal sandbox only; no real money moves.</p>
     </main>
   );

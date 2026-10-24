@@ -64,6 +64,9 @@ async function JudgeContent({ searchParams }: { searchParams: Promise<Record<str
 
       <section className={`${card} flex flex-wrap items-center gap-3`}>
         <h2 className="mr-auto text-lg font-semibold">Family phones</h2>
+        <Link href="/family" className={smallButton}>
+          Family dashboard
+        </Link>
         {inboxes.map(({ member, count }) => (
           <Link key={member.id} href={`/judge/phone/${member.id}`} className={smallButton}>
             {member.name.split(" ")[0]}&apos;s phone ({count})

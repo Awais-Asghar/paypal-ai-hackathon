@@ -5,10 +5,12 @@ The hosted demo runs on [Render](https://render.com) from [`render.yaml`](../ren
 | Resource | Type and plan | What it does | Cost |
 |---|---|---|---|
 | `suresend` | Web service, `starter` | The Next.js app. Always on, so judges never wait for a cold start. Runs migrations and seeds the Collins family before each deploy (`npm run seed`, safe to repeat) | about $7/month |
-| `suresend-db` | Postgres, `0.1c-256mb` | The database. Private network only. The free plan is deleted after 30 days, which would fall inside judging | about $6/month |
+| `suresend-db` | Postgres, `0.1c-256mb` | The database. Private network only. The free plan is deleted after 30 days, which would fall inside judging | $10.50/month (Render's price at deploy, Oct 2026) |
 | `suresend-sweep` | Cron job, every 10 minutes | Calls `/api/cron/sweep`: ends cooling-off timers, voids holds before PayPal's authorization deadline, retries stuck steps | about $1/month |
 
-All three are paid from the hackathon's Render credits.
+All three are paid from the hackathon's Render credit ($50, valid until Sep 30, 2027). Render needs a card on file for paid services even when the credit covers them; it makes a temporary $1 check.
+
+**After judging ends (Dec 15, 2026), delete all three resources** in the Render dashboard. At about $18.50/month in total the credit runs out around January 2027, and the card would be charged after that. Deploy to Dec 15 uses about $32 of the $50.
 
 Render sets `RENDER_EXTERNAL_URL`, and the app uses it for its own address, the PayPal return URLs and the Log In with PayPal return URL (`src/lib/env.ts`). There's no need to set `APP_BASE_URL` on Render.
 

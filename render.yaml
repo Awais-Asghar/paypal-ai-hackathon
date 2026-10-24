@@ -86,7 +86,7 @@ services:
 
 databases:
   - name: suresend-db
-    plan: 0.1c-256mb # smallest paid Postgres; the free one is deleted after 30 days, inside judging
+    plan: 0.1c-256mb # smallest paid Postgres ($10.50/month in Oct 2026); the free one is deleted after 30 days, inside judging
     region: ohio
     databaseName: suresend
     user: suresend

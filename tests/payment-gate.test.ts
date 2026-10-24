@@ -1,4 +1,6 @@
+import { eq } from "drizzle-orm";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { decisions, holds } from "@/lib/db/schema";
 import { GateError } from "@/lib/gate/payment-gate";
 import { ETHAN_PAYER_ID, setup } from "./helpers";
 
@@ -76,6 +78,41 @@ describe("pay only the verified payee", () => {
     const final = await t.gate.decide(held.id, t.member("Sarah").id, "approve");
     expect(final.state).toBe("VOIDED");
     expect(t.paypal.ops()).not.toContain("payout");
+  });
+
+  it("lets the protected person stop a payment before and during the check-in", async () => {
+    const before = await t.heldPayment({ payee: "Robert", amountCents: 90000, purpose: "bills" });
+    expect((await t.gate.decide(before.id, t.member("Margaret").id, "deny", "Stopped by the sender")).state).toBe("VOIDED");
+
+    const during = await t.heldPayment({ payee: "Ethan", amountCents: 250000, purpose: "family", named: "Ethan", story: GRANDPARENT_SCAM });
+    await t.gate.beginCheckin(during.id);
+    // Nobody can approve mid check-in; the check-in has to route it first.
+    await expect(t.gate.decide(during.id, t.member("Ethan").id, "approve")).rejects.toMatchObject({ code: "CONFLICT" });
+    expect((await t.gate.decide(during.id, t.member("Margaret").id, "deny", "Stopped by the sender")).state).toBe("VOIDED");
+    expect(await t.states(during.id)).toEqual(["DRAFT", "HELD", "ASSESSING", "DENIED", "VOIDED"]);
+    expect(t.paypal.ops()).not.toContain("capture");
+  });
+
+  it("does not let a stop land on a hold that is already going out", async () => {
+    const held = await t.heldPayment({ payee: "Robert", amountCents: 90000, purpose: "bills" });
+    await t.gate.assess(held.id, { text: "", llm: null });
+    expect((await t.gate.getHold(held.id)).state).toBe("COOLING_OFF");
+
+    // The scheduler approves the payment between the stop's first read and its write.
+    const read = t.gate.getHold.bind(t.gate);
+    let raced = false;
+    t.gate.getHold = async (id: string) => {
+      const seen = await read(id);
+      if (!raced) {
+        raced = true;
+        await t.db.update(holds).set({ state: "APPROVED" }).where(eq(holds.id, id));
+      }
+      return seen;
+    };
+
+    await expect(t.gate.decide(held.id, t.member("Margaret").id, "deny")).rejects.toMatchObject({ code: "CONFLICT" });
+    expect(await t.db.select().from(decisions).where(eq(decisions.holdId, held.id))).toHaveLength(0);
+    expect(t.paypal.ops()).not.toContain("void");
   });
 
   it("does not let the protected person approve their own held payment", async () => {

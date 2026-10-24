@@ -51,7 +51,7 @@ async function HoldStatus({ params }: { params: Promise<{ id: string }> }) {
         </section>
       )}
 
-      {(hold.state === "COOLING_OFF" || hold.state === "VERIFYING") && (
+      {(hold.state === "HELD" || hold.state === "ASSESSING" || hold.state === "COOLING_OFF" || hold.state === "VERIFYING") && (
         <form action={`/api/holds/${hold.id}/stop`} method="post">
           <button className="w-full rounded-xl border-2 border-red-300 bg-white px-5 py-4 text-lg font-semibold text-red-800">Stop this payment</button>
         </form>

@@ -56,6 +56,9 @@ export const DEFAULT_GATE_CONFIG: GateConfig = {
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 type Actor = "system" | "paypal-webhook" | "judge" | `member:${string}`;
 
+const DECIDABLE_STATES: readonly HoldState[] = ["VERIFYING", "COOLING_OFF"];
+const STOPPABLE_STATES: readonly HoldState[] = PENDING_STATES;
+
 const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
 const hours = (n: number) => n * 3600_000;
 
@@ -117,6 +120,13 @@ export class PaymentGate {
       return updated;
     };
     return tx ? run(tx) : this.db.transaction(run);
+  }
+
+  /** Locks the hold and checks it is still in one of `from`, so a decision can't land on a hold that moved on (say, mid-release). */
+  private async lockIn(t: Tx, holdId: string, from: readonly HoldState[]) {
+    const [row] = await t.select({ state: holds.state }).from(holds).where(eq(holds.id, holdId)).for("update");
+    if (!row) throw new GateError("NOT_FOUND", `Hold ${holdId} not found`);
+    if (!from.includes(row.state)) throw new GateError("CONFLICT", `Hold is already ${row.state}`);
   }
 
   private async audit(holdId: string, actor: Actor, detail: Record<string, unknown>) {
@@ -338,6 +348,7 @@ export class PaymentGate {
     const deny = answer === "not_me";
 
     await this.db.transaction(async (t) => {
+      await this.lockIn(t, hold.id, ["VERIFYING"]);
       await t.update(verifications).set({ status: deny ? "denied" : "confirmed", completedAt: this.now() }).where(eq(verifications.id, verification.id));
       await t.insert(decisions).values({ holdId: hold.id, memberId: member.id, actor, decision: deny ? "deny" : "approve", reason: deny ? "Not me" : "It was me", createdAt: this.now() });
       await this.transition(hold.id, deny ? "DENIED" : "APPROVED", actor, { via: "verification" }, {}, t);
@@ -351,12 +362,15 @@ export class PaymentGate {
     const hold = await this.getHold(holdId);
     const member = await this.getMember(memberId);
     if (member.circleId !== hold.circleId) throw new GateError("REFUSED", "Not a member of this circle");
-    if (hold.state !== "VERIFYING" && hold.state !== "COOLING_OFF") throw new GateError("CONFLICT", `Hold is ${hold.state}`);
-    // The protected person can always stop a payment, but approving a held payment needs someone else.
+    // Anyone can stop a held payment at any point before it goes out, including during the check-in.
+    // Approving only makes sense once the check-in has routed it, and needs someone other than the sender.
+    const open = decision === "approve" ? DECIDABLE_STATES : STOPPABLE_STATES;
+    if (!open.includes(hold.state)) throw new GateError("CONFLICT", `Hold is ${hold.state}`);
     if (decision === "approve" && member.role !== "trusted") throw new GateError("REFUSED", "Only a trusted family member can approve");
 
     const actor = `member:${member.id}` as const;
     await this.db.transaction(async (t) => {
+      await this.lockIn(t, holdId, open);
       await t.insert(decisions).values({ holdId, memberId, actor, decision, reason: reason ?? null, createdAt: this.now() });
       await this.transition(holdId, decision === "approve" ? "APPROVED" : "DENIED", actor, { via: "decision", reason }, {}, t);
     });

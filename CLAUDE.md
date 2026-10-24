@@ -102,6 +102,10 @@ The PayPal app shows as "HoldOn" in the dashboard list (page title SureSend); it
 - Test unhappy paths: declines, failed renewals, refunds, disputes.
 - Some products (Store Sync, parts of agentic commerce) are gated behind business review. Don't depend on them.
 
+## Next.js dev gotcha
+
+- Keep `logging: { browserToTerminal: false }` in `next.config.ts`. With browser log forwarding on, `next dev` on Windows looped: every page load wrote to `.next/dev/logs/next-development.log`, which triggered a rebuild and a full page reload, so pages sat on "Loading..." and could not be clicked (2026-10-24). Production builds were not affected.
+
 ## Useful commands and tools
 
 - PayPal AI Toolkit (Claude Code): `/plugin install paypal@claude-plugins-official`, then `/paypal:setup`, `/paypal:sandbox`, `/paypal:test-accounts`, `/paypal:explain-error <code>`, `/paypal:doctor`

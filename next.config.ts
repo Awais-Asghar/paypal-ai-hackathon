@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // PGlite loads its WebAssembly files at runtime, so it must not be bundled.
   serverExternalPackages: ["@electric-sql/pglite"],
   partialPrefetching: true,
+  logging: { browserToTerminal: false },
   turbopack: {
     rules: {
       "*.css": {

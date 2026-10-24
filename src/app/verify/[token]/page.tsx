@@ -1,12 +1,11 @@
 import { and, eq } from "drizzle-orm";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { button, Eyebrow, Loading, Page } from "@/components/ui";
 import { getDb } from "@/lib/db";
 import { members } from "@/lib/db/schema";
 import { money } from "@/lib/format";
 import { getGate, GateError } from "@/lib/gate";
-
-const button = "block w-full rounded-xl px-5 py-4 text-center text-lg font-semibold";
 
 async function VerifyCard({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -26,56 +25,72 @@ async function VerifyCard({ params }: { params: Promise<{ token: string }> }) {
   const expired = verification.status === "expired" || verification.expiresAt <= new Date();
 
   if (verification.status === "denied" || hold.state === "VOIDED") {
-    return <Outcome title="Thank you. The payment was stopped." body={`${sender?.name ?? "Your family member"}'s ${amount} never left their account.`} />;
+    return <Outcome tone="safe" title="Thank you. The payment was stopped." body={`${sender?.name ?? "Your family member"}'s ${amount} never left their account.`} />;
   }
   if (verification.status === "confirmed" || hold.state === "RELEASED") {
-    return <Outcome title="Confirmed" body={`The ${amount} is being sent to your own PayPal account.`} />;
+    return <Outcome tone="sent" title="Confirmed" body={`The ${amount} is being sent to your own PayPal account.`} />;
   }
-  if (expired || hold.state !== "VERIFYING") return <Outcome title="This check is closed" body="Nothing more is needed from you." />;
+  if (expired || hold.state !== "VERIFYING") return <Outcome tone="neutral" title="This check is closed" body="Nothing more is needed from you." />;
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-semibold text-stone-900">Is this really you, {firstName}?</h1>
-        <p className="mt-3 text-lg leading-relaxed text-stone-700">
-          {sender?.name ?? "A family member"} is about to send <strong>{amount}</strong>. Someone told them it was for you. The money is on hold until you answer.
+      <header>
+        <Eyebrow tone="alert">Safety check from SureSend</Eyebrow>
+        <h1 className="mt-3 font-serif text-4xl font-medium tracking-tight">Is this really you, {firstName}?</h1>
+        <p className="mt-4 text-lg leading-relaxed text-ink-2">
+          {sender?.name ?? "A family member"} is about to send <strong className="text-ink">{amount}</strong>. Someone told them it was for you. The money is on hold in PayPal until you answer.
         </p>
-      </div>
+      </header>
       {verification.status === "identity_matched" ? (
         <form action={`/api/verify/${encodeURIComponent(token)}/answer`} method="post" className="flex flex-col gap-3">
-          <p className="text-stone-600">PayPal confirmed it is you. Did you ask for this money?</p>
-          <button name="answer" value="not_me" className={`${button} bg-red-700 text-white`}>No, that wasn&apos;t me. Stop it.</button>
-          <button name="answer" value="it_was_me" className={`${button} border-2 border-stone-300 bg-white text-stone-900`}>Yes, I asked for it</button>
+          <p className="flex items-center gap-2 font-semibold text-brand-strong">
+            <span aria-hidden>✓</span> PayPal confirmed it is you. Did you ask for this money?
+          </p>
+          <button name="answer" value="not_me" className={button.danger}>
+            No, that wasn&apos;t me. Stop it.
+          </button>
+          <button name="answer" value="it_was_me" className={button.secondary}>
+            Yes, I asked for it
+          </button>
         </form>
       ) : (
         <div className="flex flex-col gap-3">
           {verification.status === "identity_mismatch" && (
-            <p className="rounded-xl bg-amber-50 p-4 text-amber-950">That PayPal account isn&apos;t the one saved for {firstName}. Please log in with your own PayPal.</p>
+            <p role="alert" className="rounded-xl bg-wait-soft p-4 text-wait">
+              That PayPal account isn&apos;t the one saved for {firstName}. Please log in with your own PayPal.
+            </p>
           )}
-          <p className="text-stone-600">To prove it is you, log in with your own PayPal account. A voice can be copied; your PayPal login can&apos;t.</p>
-          <a href={`/api/verify/${encodeURIComponent(token)}/login`} className={`${button} bg-[#0070ba] text-white`}>Log in with PayPal</a>
+          <p className="text-ink-2">To prove it is you, log in with your own PayPal account. A voice can be copied; your PayPal login can&apos;t.</p>
+          <a href={`/api/verify/${encodeURIComponent(token)}/login`} className={button.paypal}>
+            Log in with PayPal
+          </a>
         </div>
       )}
     </div>
   );
 }
 
-function Outcome({ title, body }: { title: string; body: string }) {
+const OUTCOME = {
+  safe: "border-brand/30 bg-brand-soft text-brand-strong",
+  sent: "border-sent/25 bg-sent-soft text-sent",
+  neutral: "border-line bg-surface text-ink",
+};
+
+function Outcome({ title, body, tone }: { title: string; body: string; tone: keyof typeof OUTCOME }) {
   return (
-    <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-6 text-emerald-950">
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      <p className="mt-2 text-lg">{body}</p>
+    <div className={`rounded-xl border p-6 ${OUTCOME[tone]}`}>
+      <h1 className="font-serif text-3xl font-medium">{title}</h1>
+      <p className="mt-2 text-lg text-ink-2">{body}</p>
     </div>
   );
 }
 
 export default function VerifyPage({ params }: PageProps<"/verify/[token]">) {
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-10">
-      <p className="text-sm font-semibold uppercase tracking-widest text-emerald-700">SureSend</p>
-      <Suspense fallback={<p className="text-lg text-stone-500">Loading...</p>}>
+    <Page>
+      <Suspense fallback={<Loading />}>
         <VerifyCard params={params} />
       </Suspense>
-    </main>
+    </Page>
   );
 }

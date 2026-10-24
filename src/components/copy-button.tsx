@@ -16,7 +16,7 @@ export function CopyButton({ text, label = "Copy" }: { text: string; label?: str
           setCopied(false);
         }
       }}
-      className="rounded-xl border-2 border-stone-300 bg-white px-4 py-2 font-semibold text-stone-900 hover:border-stone-500"
+      className="inline-flex min-h-10 items-center rounded-full border border-line-strong bg-surface px-4 font-semibold text-ink hover:border-ink"
     >
       {copied ? "Copied" : label}
     </button>

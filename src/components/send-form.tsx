@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { button, field } from "@/components/ui";
 
 type Option = { id: string; label: string };
 export type SendDefaults = { payeeId?: string; amount?: string; purpose?: string; namedMemberId?: string; story?: string; scenario?: string };
@@ -11,8 +12,6 @@ const PURPOSES = [
   ["shopping", "Shopping"],
   ["other", "Something else"],
 ] as const;
-
-const field = "w-full rounded-xl border-2 border-stone-300 bg-white px-4 py-3 text-lg focus:border-emerald-700 focus:outline-none";
 
 export function SendForm({ circleId, payees, family, defaults }: { circleId: string; payees: Option[]; family: Option[]; defaults: SendDefaults }) {
   const [purpose, setPurpose] = useState(defaults.purpose ?? "bills");
@@ -50,7 +49,7 @@ export function SendForm({ circleId, payees, family, defaults }: { circleId: str
   return (
     <form action={submit} className="flex flex-col gap-5">
       <label className="flex flex-col gap-2">
-        <span className="text-lg font-medium text-stone-900">Who are you paying?</span>
+        <span className="text-lg font-semibold text-ink">Who are you paying?</span>
         <select name="payeeId" defaultValue={defaults.payeeId} className={field} required>
           {payees.map((p) => (
             <option key={p.id} value={p.id}>{p.label}</option>
@@ -58,14 +57,14 @@ export function SendForm({ circleId, payees, family, defaults }: { circleId: str
         </select>
       </label>
       <label className="flex flex-col gap-2">
-        <span className="text-lg font-medium text-stone-900">How much? (CAD)</span>
+        <span className="text-lg font-semibold text-ink">How much? (CAD)</span>
         <input name="amount" inputMode="decimal" defaultValue={defaults.amount} placeholder="0.00" className={field} required />
       </label>
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-lg font-medium text-stone-900">What is it for?</legend>
+        <legend className="mb-2 text-lg font-semibold text-ink">What is it for?</legend>
         <div className="grid grid-cols-2 gap-2">
           {PURPOSES.map(([value, label]) => (
-            <label key={value} className={`cursor-pointer rounded-xl border-2 px-4 py-3 text-center text-lg ${purpose === value ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-stone-300 bg-white"}`}>
+            <label key={value} className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl border-2 px-4 py-3 text-center text-lg has-[:focus-visible]:outline has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand ${purpose === value ? "border-brand bg-brand-soft font-semibold text-brand-strong" : "border-line-strong bg-surface text-ink"}`}>
               <input type="radio" name="purpose" value={value} checked={purpose === value} onChange={() => setPurpose(value)} className="sr-only" />
               {label}
             </label>
@@ -74,7 +73,7 @@ export function SendForm({ circleId, payees, family, defaults }: { circleId: str
       </fieldset>
       {purpose === "family" && (
         <label className="flex flex-col gap-2">
-          <span className="text-lg font-medium text-stone-900">Which family member is it for?</span>
+          <span className="text-lg font-semibold text-ink">Which family member is it for?</span>
           <select name="namedMemberId" defaultValue={defaults.namedMemberId} className={field}>
             {family.map((m) => (
               <option key={m.id} value={m.id}>{m.label}</option>
@@ -83,12 +82,12 @@ export function SendForm({ circleId, payees, family, defaults }: { circleId: str
         </label>
       )}
       <label className="flex flex-col gap-2">
-        <span className="text-lg font-medium text-stone-900">In your own words, what is this for?</span>
+        <span className="text-lg font-semibold text-ink">In your own words, what is this for?</span>
         <textarea name="story" rows={3} defaultValue={defaults.story} className={field} />
       </label>
-      {error && <p className="rounded-xl bg-red-50 p-3 text-red-900">{error}</p>}
-      <p className="text-stone-600">Next, you&apos;ll approve this in PayPal. Your money will be <strong>held, not sent</strong>, until it&apos;s checked.</p>
-      <button disabled={busy} className="rounded-xl bg-emerald-700 px-5 py-4 text-lg font-semibold text-white disabled:opacity-50">
+      {error && <p role="alert" className="rounded-xl bg-alert-soft p-3 text-alert">{error}</p>}
+      <p className="text-ink-2">Next, you&apos;ll approve this in PayPal. Your money will be <strong>held, not sent</strong>, until it&apos;s checked.</p>
+      <button disabled={busy} className={button.paypal}>
         {busy ? "Opening PayPal..." : "Continue to PayPal"}
       </button>
     </form>

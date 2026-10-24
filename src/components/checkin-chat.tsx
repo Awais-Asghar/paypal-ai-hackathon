@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { button, card, field } from "@/components/ui";
 
 type Turn = { role: "user" | "assistant"; text: string };
 
@@ -78,24 +79,35 @@ export function CheckinChat({ holdId, sample }: { holdId: string; sample?: { lab
     });
 
   return (
-    <section className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-white p-4">
-      <h3 className="text-lg font-semibold text-stone-900">A few quick questions</h3>
+    <section className={`${card} flex flex-col gap-4`}>
+      <div>
+        <h3 className="font-serif text-2xl font-medium">A few quick questions</h3>
+        <p className="mt-1 text-muted">SureSend&apos;s safety assistant. Your money stays held while we talk.</p>
+      </div>
       <div className="flex max-h-[28rem] flex-col gap-3 overflow-y-auto" aria-live="polite">
         {turns.map((turn, i) => (
           <p
             key={i}
             className={`max-w-[85%] rounded-2xl px-4 py-3 text-lg leading-relaxed ${
-              turn.role === "assistant" ? "self-start bg-stone-100 text-stone-900" : "self-end bg-emerald-700 text-white"
+              turn.role === "assistant" ? "self-start rounded-bl-sm bg-sunk text-ink" : "self-end rounded-br-sm bg-brand text-white"
             }`}
           >
             {turn.text}
           </p>
         ))}
-        {busy && <p className="self-start text-stone-500">Thinking...</p>}
+        {busy && (
+          <p role="status" className="self-start text-muted">
+            Thinking...
+          </p>
+        )}
         <div ref={endRef} />
       </div>
 
-      {error && <p className="rounded-xl bg-red-50 p-3 text-red-900">{error}</p>}
+      {error && (
+        <p role="alert" className="rounded-xl bg-alert-soft p-3 text-alert">
+          {error}
+        </p>
+      )}
 
       {!done && (
         <form
@@ -112,15 +124,15 @@ export function CheckinChat({ holdId, sample }: { holdId: string; sample?: { lab
             onChange={(e) => setDraft(e.target.value)}
             disabled={busy}
             placeholder="Type your answer"
-            className="min-w-0 flex-1 rounded-xl border-2 border-stone-300 px-4 py-3 text-lg focus:border-emerald-700 focus:outline-none"
+            className={`${field} min-w-0 flex-1`}
           />
-          <button disabled={busy || !draft.trim()} className="rounded-xl bg-emerald-700 px-5 py-3 text-lg font-semibold text-white disabled:opacity-50">
+          <button disabled={busy || !draft.trim()} className={button.brand}>
             Send
           </button>
         </form>
       )}
 
-      <label className={`cursor-pointer text-center text-emerald-800 underline underline-offset-4 ${busy ? "pointer-events-none opacity-50" : ""}`}>
+      <label className={`cursor-pointer text-center font-semibold text-brand underline underline-offset-4 has-[:focus-visible]:outline has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand ${busy ? "pointer-events-none opacity-50" : ""}`}>
         Add a screenshot or voicemail
         <input
           type="file"
@@ -135,7 +147,7 @@ export function CheckinChat({ holdId, sample }: { holdId: string; sample?: { lab
       </label>
 
       {sample && (
-        <button onClick={() => attach("sample")} disabled={busy} className="text-center text-emerald-800 underline underline-offset-4 disabled:opacity-50">
+        <button onClick={() => attach("sample")} disabled={busy} className="text-center font-semibold text-brand underline underline-offset-4 disabled:opacity-50">
           Share the {sample.label} (demo)
         </button>
       )}
@@ -143,7 +155,7 @@ export function CheckinChat({ holdId, sample }: { holdId: string; sample?: { lab
       <button
         onClick={finish}
         disabled={busy || turns.length < 2}
-        className={`rounded-xl px-5 py-4 text-lg font-semibold disabled:opacity-50 ${done ? "bg-emerald-700 text-white" : "border-2 border-stone-300 text-stone-900"}`}
+        className={done ? button.primary : button.secondary}
       >
         {done ? "Check this payment" : "I've told you everything"}
       </button>

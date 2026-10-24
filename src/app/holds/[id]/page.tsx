@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { CheckinChat } from "@/components/checkin-chat";
 import { StatusCard } from "@/components/status-card";
+import { button, card, Loading, Page } from "@/components/ui";
 import { canReport } from "@/lib/aftercare";
 import { getDb } from "@/lib/db";
 import { holds, payees } from "@/lib/db/schema";
@@ -22,13 +23,15 @@ async function HoldStatus({ params }: { params: Promise<{ id: string }> }) {
   const { hold, payee } = row;
   const judge = judgeMode();
   const sample = judge && isScenarioId(hold.demoScenario) ? SCENARIOS[hold.demoScenario].evidence : null;
+  const safe = hold.risk === "LOW";
+  const stoppable = hold.state === "HELD" || hold.state === "ASSESSING" || hold.state === "COOLING_OFF" || hold.state === "VERIFYING";
 
   return (
     <>
-      <StatusCard state={hold.state} amount={`${money(hold.amountCents, hold.currency)} to ${payee.label}`} />
+      <StatusCard state={hold.state} risk={hold.risk} amount={`${money(hold.amountCents, hold.currency)} to ${payee.label}`} />
 
       {hold.state === "DRAFT" && hold.paypalOrderId && (
-        <a href={`${SANDBOX_WEB}/checkoutnow?token=${hold.paypalOrderId}`} className="rounded-xl bg-[#0070ba] px-5 py-4 text-center text-lg font-semibold text-white">
+        <a href={`${SANDBOX_WEB}/checkoutnow?token=${hold.paypalOrderId}`} className={button.paypal}>
           Continue to PayPal
         </a>
       )}
@@ -36,36 +39,43 @@ async function HoldStatus({ params }: { params: Promise<{ id: string }> }) {
       {(hold.state === "HELD" || hold.state === "ASSESSING") && <CheckinChat holdId={hold.id} sample={sample ? { label: sample.label } : undefined} />}
 
       {hold.state === "COOLING_OFF" && hold.coolingOffUntil && (
-        <p className="text-lg text-stone-700">
-          It can go out after {hold.coolingOffUntil.toLocaleString("en-CA", { weekday: "long", hour: "numeric", minute: "2-digit" })}.
+        <p className="text-lg text-ink-2">
+          It can go out after{" "}
+          <strong className="text-ink">{hold.coolingOffUntil.toLocaleString("en-CA", { weekday: "long", hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" })}</strong>. You can still stop it before then.
         </p>
       )}
 
       {hold.riskReasons && hold.riskReasons.length > 0 && (
-        <section className="rounded-2xl border border-stone-200 bg-white p-5">
-          <h3 className="font-semibold text-stone-900">{hold.risk === "LOW" ? "Why this looked safe" : "Why we paused"}</h3>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-stone-700">
+        <section className={card}>
+          <h3 className="font-serif text-xl font-medium">{safe ? "Why this looked safe" : "Why we paused"}</h3>
+          <ul className="mt-3 space-y-2">
             {hold.riskReasons.map((r) => (
-              <li key={r}>{r}</li>
+              <li key={r} className="flex gap-3 text-ink-2">
+                <span aria-hidden className={`mt-0.5 font-bold ${safe ? "text-brand" : "text-alert"}`}>
+                  {safe ? "✓" : "!"}
+                </span>
+                <span>{r}</span>
+              </li>
             ))}
           </ul>
         </section>
       )}
 
       {canReport(hold) && (
-        <Link href={`/holds/${hold.id}/report`} className="rounded-xl border-2 border-stone-300 bg-white px-5 py-4 text-center text-lg font-semibold text-stone-900">
+        <Link href={`/holds/${hold.id}/report`} className={button.secondary}>
           Report this scam attempt
         </Link>
       )}
 
-      {(hold.state === "HELD" || hold.state === "ASSESSING" || hold.state === "COOLING_OFF" || hold.state === "VERIFYING") && (
+      {stoppable && (
         <form action={`/api/holds/${hold.id}/stop`} method="post">
-          <button className="w-full rounded-xl border-2 border-red-300 bg-white px-5 py-4 text-lg font-semibold text-red-800">Stop this payment</button>
+          <button className={`${button.dangerOutline} w-full`}>Stop this payment</button>
+          <p className="mt-2 text-center text-sm text-muted">Stopping cancels it in PayPal. The money stays with you.</p>
         </form>
       )}
 
       {judge && (
-        <Link href="/judge" className="text-center font-semibold text-emerald-700">
+        <Link href="/judge" className="text-center font-semibold text-brand underline underline-offset-4">
           Back to Judge Mode
         </Link>
       )}
@@ -75,11 +85,10 @@ async function HoldStatus({ params }: { params: Promise<{ id: string }> }) {
 
 export default function HoldPage({ params }: PageProps<"/holds/[id]">) {
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-10">
-      <p className="text-sm font-semibold uppercase tracking-widest text-emerald-700">SureSend</p>
-      <Suspense fallback={<p className="text-lg text-stone-500">Loading your payment...</p>}>
+    <Page>
+      <Suspense fallback={<Loading label="Loading your payment..." />}>
         <HoldStatus params={params} />
       </Suspense>
-    </main>
+    </Page>
   );
 }

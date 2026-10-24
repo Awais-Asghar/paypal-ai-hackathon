@@ -77,9 +77,9 @@ Run with [`scripts/sandbox-check.mjs`](../scripts/sandbox-check.mjs). Setup step
 - [x] Sandbox business account (SureSend Demo) plus personal accounts Margaret Collins ("Nana"), Ethan Collins and Robert Hayes (landlord), all in Canada (CAD) (2026-10-21)
 - [x] Access token from client credentials (2026-10-21)
 - [x] Order with `intent=AUTHORIZE` → Margaret approves → authorize → **void**: authorization `9UK966797J1895949` CREATED → VOIDED, 25.00 CAD (2026-10-21). Authorizations expire after 29 days
-- [ ] Authorize → **capture** (same flow, `authorize capture`)
+- [x] Authorize → **capture** → payout, through the app: $900 rent CAPTURED, payout to Robert SUCCESS (2026-10-24)
 - [x] Payouts from the business account to a personal sandbox account: batch `W3YARBZK4AA2Q` SUCCESS, 1.00 CAD to Ethan (2026-10-21). Note: the Payouts amount field is `currency`, not `currency_code`
 - [x] Log In with PayPal enabled on the app; code exchange + userinfo returns a stable PayPal user ID/email: Ethan logged in, `payer_id` SMLTYXGPGSUYC, email matched (2026-10-21). Return URL must be `http://127.0.0.1:3000/callback`; `verified_account` is not returned in sandbox, so match on `payer_id`
 - [x] Transaction Search returns data (2026-10-21, after requesting a fresh token with `ignoreCache=true`)
-- [ ] Webhook delivery through a tunnel (ngrok/Cloudflare) with signature verification
+- [ ] Webhook delivery with signature verification (on the Render URL, so no tunnel is needed)
 - [ ] PayPal AI Toolkit and APIMatic Context Plugin installed in Claude Code

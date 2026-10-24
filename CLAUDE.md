@@ -43,7 +43,9 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - Live-tested on the owner's machine (2026-10-23) with the branch's own code: Groq `openai/gpt-oss-120b` (about 1 s per call; grandparent scam HIGH, rent LOW, sensible follow-up questions), Groq Whisper (sample voicemail transcribed word for word in 0.5 s), and Gemini `gemini-flash-lite-latest` (chat, verdicts and screenshot reading of a fake CRA text, 1 to 3 s). `gemini-3.8-flash` returned 503 "high demand" or hung on both keys that day, so Groq now goes first for text (`LLM_PROVIDER=groq`, the default), each Gemini key falls back to `GEMINI_FALLBACK_MODEL` (`gemini-flash-lite-latest`), and each model gets 12 s before the next one is tried. Live through the app's real chain (2026-10-24): chat about 1 s, verdict about 1.3 s, screenshot about 9 s.
 - Fixed 2026-10-24: Nana can press "Stop this payment" during the check-in (HELD and ASSESSING), not only later; `decide()` and `answerVerification()` re-check the hold's state under the row lock, so a stop or answer can't land on a hold that is already being paid out; route redirects use a relative `Location` (`backTo` in `src/lib/http.ts`), because `request.url` carries the server's own host (localhost in dev, an internal address behind Render's proxy). 48 tests.
 - LLM_PROVIDER=anthropic is not implemented. Known trade-off: hard rules can match negated answers ("they didn't say keep it secret"), which raises risk; this is the safe direction.
-- Verified in the sandbox (2026-10-23): payouts with `recipient_type: PAYPAL_ID` to Ethan's payer_id (batch `E25Z6ST7SP3UQ`, 1.00 CAD, SUCCESS). Not yet run: the full app flow against real PayPal.
+- Verified in the sandbox (2026-10-23): payouts with `recipient_type: PAYPAL_ID` to Ethan's payer_id (batch `E25Z6ST7SP3UQ`, 1.00 CAD, SUCCESS).
+- **Full app flow verified live (2026-10-24)** in Chrome against the real sandbox and live AI: grandparent scam $2,500 (Margaret approves, check-in with sample voicemail, HIGH, "Is this really you?" to Ethan, Ethan logs in with PayPal, payer_id matched, "not me", authorization VOIDED) and rent $900 (one question, LOW, CAPTURED, payout to Robert SUCCESS). Judge Mode now shows a live Payout column. Fixed on the way: the check-in chat crashed in current Chrome (its scroll effect returned the Promise that `scrollIntoView` now returns).
+- Testing tip: use separate browser contexts (or a private window) for Margaret and Ethan, or PayPal reuses the last login. Orders set `brand_name: "SureSend"`, or the checkout would say "Test Store" (the app's default name).
 - Tests need `hookTimeout: 30_000` (in `vitest.config.mts`): each test boots an in-memory PGlite, and on Windows that setup can pass the 10 s default when files run in parallel.
 
 **Verified in the PayPal sandbox (Canada, CAD)** with `scripts/sandbox-check.mjs`:
@@ -51,7 +53,8 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - Order `intent=AUTHORIZE` → buyer approval → authorize → void (authorization `9UK966797J1895949`)
 - Payouts to a personal account (batch `W3YARBZK4AA2Q`)
 - Log In with PayPal → userinfo; match family members on `payer_id` (Ethan = `SMLTYXGPGSUYC`)
-- Not yet run: authorize → capture; webhook delivery through a tunnel
+- Authorize → capture → payout through the app (2026-10-24, see above)
+- Not yet run: webhook delivery (planned on the Render URL, so no tunnel is needed)
 
 **Sandbox accounts** (emails live in `.env`):
 

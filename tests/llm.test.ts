@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { FallbackModel, GeminiModel, generateJson, GroqModel, jsonSchemaFor, type JsonModel } from "@/lib/ai/llm";
+import { FallbackModel, GeminiModel, generateJson, GroqModel, jsonSchemaFor, modelsFromEnv, type JsonModel } from "@/lib/ai/llm";
 
 const okJson = (body: unknown) => new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } });
 
@@ -67,6 +67,21 @@ describe("FallbackModel", () => {
   it("rejects answers that don't match the schema", async () => {
     const wrong: JsonModel = { name: "wrong", json: async () => ({ risk: "MAYBE" }) };
     await expect(generateJson(wrong, { schemaName: "v", system: "", messages: [] }, schema)).rejects.toThrow();
+  });
+});
+
+describe("modelsFromEnv", () => {
+  const keys = { GEMINI_API_KEY_Pro: "p", GEMINI_API_KEY_Plus: "q", GROQ_API_KEY: "g" };
+
+  it("puts Groq first by default, then each Gemini key with its main and fallback model", () => {
+    expect(modelsFromEnv(keys).name).toBe(
+      "groq:openai/gpt-oss-120b > gemini:gemini-3.8-flash > gemini:gemini-flash-lite-latest > gemini-backup:gemini-3.8-flash > gemini-backup:gemini-flash-lite-latest",
+    );
+  });
+  it("puts Gemini first with LLM_PROVIDER=gemini and skips a duplicate fallback model", () => {
+    expect(modelsFromEnv({ ...keys, LLM_PROVIDER: "gemini", GEMINI_FALLBACK_MODEL: "gemini-3.8-flash", GEMINI_API_KEY_Plus: "" }).name).toBe(
+      "gemini:gemini-3.8-flash > groq:openai/gpt-oss-120b",
+    );
   });
 });
 

@@ -14,7 +14,8 @@ export interface JsonModel {
   json(req: JsonRequest): Promise<unknown>;
 }
 
-const TIMEOUT_MS = 25_000;
+// Per model, so a stuck model hands over to the next one quickly. A healthy model answers in 1 to 3 s.
+const TIMEOUT_MS = 12_000;
 
 export class GeminiModel implements JsonModel {
   readonly name: string;
@@ -115,11 +116,18 @@ export async function generateJson<T extends z.ZodType>(model: JsonModel, req: O
   return schema.parse(raw);
 }
 
-export function modelsFromEnv(env = process.env): JsonModel {
-  const gemini: JsonModel[] = [];
-  const model = env.GEMINI_MODEL || "gemini-3.8-flash";
-  if (env.GEMINI_API_KEY_Pro) gemini.push(new GeminiModel(env.GEMINI_API_KEY_Pro, model, "gemini"));
-  if (env.GEMINI_API_KEY_Plus) gemini.push(new GeminiModel(env.GEMINI_API_KEY_Plus, model, "gemini-backup"));
+/**
+ * Groq goes first unless LLM_PROVIDER=gemini: it answers text in about a second. Gemini reads
+ * screenshots (Groq has no vision) and backs up text. Each Gemini key tries the main model, then
+ * the lighter fallback model, which stayed up when the main one returned 503 "high demand".
+ */
+export function modelsFromEnv(env: Record<string, string | undefined> = process.env): JsonModel {
+  const geminiModels = [...new Set([env.GEMINI_MODEL || "gemini-3.8-flash", env.GEMINI_FALLBACK_MODEL || "gemini-flash-lite-latest"])];
+  const keys: [string, string | undefined][] = [
+    ["gemini", env.GEMINI_API_KEY_Pro],
+    ["gemini-backup", env.GEMINI_API_KEY_Plus],
+  ];
+  const gemini: JsonModel[] = keys.flatMap(([label, key]) => (key ? geminiModels.map((m) => new GeminiModel(key, m, label)) : []));
   const groq: JsonModel[] = env.GROQ_API_KEY ? [new GroqModel(env.GROQ_API_KEY, env.GROQ_CHAT_MODEL || "openai/gpt-oss-120b")] : [];
-  return new FallbackModel(env.LLM_PROVIDER === "groq" ? [...groq, ...gemini] : [...gemini, ...groq]);
+  return new FallbackModel(env.LLM_PROVIDER === "gemini" ? [...gemini, ...groq] : [...groq, ...gemini]);
 }

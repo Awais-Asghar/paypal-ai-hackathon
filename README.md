@@ -24,6 +24,8 @@ Set `JUDGE_MODE=1` in `.env` and open http://127.0.0.1:3000/judge for the guided
 
 Checks: `npm test`, `npm run typecheck`, `npm run lint`.
 
+Hosted demo: deployed on Render from [`render.yaml`](render.yaml) (web app, Postgres, a scheduler cron job). Steps: [docs/DEPLOY.md](docs/DEPLOY.md).
+
 ## Project layout
 
 | Path | What's there |
@@ -40,7 +42,8 @@ Checks: `npm test`, `npm run typecheck`, `npm run lint`.
 | `src/lib/demo/` | Judge Mode scenarios and reset |
 | `drizzle/` | Database migrations |
 | `tests/` | Vitest tests (in-memory database, fake PayPal, fake AI) |
-| `scripts/` | `seed.mts` (demo data) and `sandbox-check.mjs` (PayPal sandbox checks) |
+| `scripts/` | `seed.mts` (demo data), `sweep.mjs` (Render cron job) and `sandbox-check.mjs` (PayPal sandbox checks) |
+| `render.yaml` | Render Blueprint for the hosted demo |
 | `docs/` | Project documents (listed below) |
 
 `AGENTS.md` is written by Next.js for AI coding agents; `CLAUDE.md` holds this project's agent guide.
@@ -51,6 +54,7 @@ Checks: `npm test`, `npm run typecheck`, `npm run lint`.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): architecture, money flow, safety rules, timeline
 - [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md): demo video script and judge access plan
 - [docs/PAYPAL_SETUP.md](docs/PAYPAL_SETUP.md): PayPal developer account and sandbox setup
+- [docs/DEPLOY.md](docs/DEPLOY.md): deploying the hosted demo on Render
 - [docs/HACKATHON.md](docs/HACKATHON.md): hackathon requirements, judging, prizes
 - [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): official webinar transcripts
 - [docs/RULES.md](docs/RULES.md) / [CLAUDE.md](CLAUDE.md): contributor and AI-agent rules

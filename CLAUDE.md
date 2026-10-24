@@ -12,7 +12,8 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 4. [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md): demo video script and judge access plan. Several features exist because of it.
 5. [docs/PAYPAL_SETUP.md](docs/PAYPAL_SETUP.md): PayPal developer/sandbox setup and how to run the sandbox checks.
 6. [docs/HACKATHON.md](docs/HACKATHON.md): requirements, judging criteria, prizes, sponsor tools, submission checklist.
-7. [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): the four official webinars (key takeaways at the top).
+7. [docs/DEPLOY.md](docs/DEPLOY.md): the hosted demo on Render (`render.yaml` Blueprint) and the PayPal settings it needs.
+8. [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): the four official webinars (key takeaways at the top).
 
 ## What this project is
 
@@ -72,7 +73,7 @@ The PayPal app shows as "HoldOn" in the dashboard list (page title SureSend); it
 - Name: **SureSend** (renamed from HoldOn). Only idea; the old brainstorm is in git history only (`git show 4260579:IDEAS.md`).
 - AI (changed 2026-10-24): provider switch `LLM_PROVIDER` (default `groq`, so Groq `openai/gpt-oss-120b` answers text first in about 1 s). Gemini reads screenshots (Groq has no vision model) and backs up text: `gemini-3.8-flash`, then `gemini-flash-lite-latest`, on `GEMINI_API_KEY_Pro`, then `GEMINI_API_KEY_Plus`. Groq (`GROQ_API_KEY`) also does `whisper-large-v3-turbo` transcription and `llama-prompt-guard-2` injection screening.
 - Database: Postgres everywhere: PGlite locally (nothing to install), Render Postgres (paid Basic plan from the $50 Render credits) for the hosted demo, Drizzle ORM. Not Supabase: free projects pause after 7 days idle.
-- Hosting: Render (sponsor prize), around Nov 5–6. Not Vercel.
+- Hosting: Render (sponsor prize). Not Vercel. Moved up to 2026-10-25 (the owner has no time after Monday Oct 26). `render.yaml` (validated against Render's schema) creates the `starter` web service (pre-deploy `npm run seed`), Postgres `0.1c-256mb` on the private network only, and the `suresend-sweep` cron job every 10 minutes (`scripts/sweep.mjs` over the private network with `CRON_SECRET`). The app takes its address from `RENDER_EXTERNAL_URL` (`src/lib/env.ts`). Owner steps: docs/DEPLOY.md.
 - Log In with PayPal return URL is `http://127.0.0.1:3000/callback`; PayPal rejects `localhost` for it.
 
 **Not done yet (owner side):** install the PayPal AI Toolkit plugin and the APIMatic Context Plugin (APIMatic prize eligibility).

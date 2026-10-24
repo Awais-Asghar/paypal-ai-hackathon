@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { backTo, judgeOff } from "@/lib/demo/guard";
+import { judgeOff } from "@/lib/demo/guard";
 import { GateError, getGate } from "@/lib/gate";
-import { errorResponse } from "@/lib/http";
+import { backTo, errorResponse } from "@/lib/http";
 
 // Judge Mode only: end a 24-hour cooling-off timer now. Recorded in the audit log as "judge".
 // Accepts JSON ({ holdId }) or a form post from the Judge page.
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       if (e instanceof GateError || !isForm) throw e;
       console.error("Release after skipping cooling-off failed; sweeper will retry", e);
     }
-    return backTo(request, "/judge");
+    return backTo("/judge");
   } catch (e) {
     return errorResponse(e);
   }

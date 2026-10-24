@@ -1,9 +1,9 @@
-import { backTo, judgeOff } from "@/lib/demo/guard";
+import { judgeOff } from "@/lib/demo/guard";
 import { getGate } from "@/lib/gate";
-import { errorResponse } from "@/lib/http";
+import { backTo, errorResponse } from "@/lib/http";
 
 // "Simulate next event": runs the scheduler once, the same work the cron job does.
-export async function POST(request: Request) {
+export async function POST() {
   const off = judgeOff();
   if (off) return off;
   try {
@@ -11,5 +11,5 @@ export async function POST(request: Request) {
   } catch (e) {
     return errorResponse(e);
   }
-  return backTo(request, "/judge");
+  return backTo("/judge");
 }

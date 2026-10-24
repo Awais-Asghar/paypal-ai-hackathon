@@ -21,6 +21,13 @@ export function errorResponse(e: unknown, safeMessage = "Something went wrong. T
   return Response.json({ error: safeMessage }, { status: 500 });
 }
 
+/**
+ * Form posts come back to a page with a 303, so the browser follows with a GET. The Location is
+ * relative on purpose: request.url carries the server's own host (localhost in dev, an internal
+ * address behind Render's proxy), not the one the browser used.
+ */
+export const backTo = (path: string) => new Response(null, { status: 303, headers: { Location: path } });
+
 /** Constant-time check of "Authorization: Bearer <secret>". An unset secret always fails. */
 export function hasBearer(request: Request, secret: string | undefined) {
   if (!secret) return false;

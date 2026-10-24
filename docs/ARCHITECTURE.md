@@ -88,9 +88,9 @@ Nana taps "Send $2,500 to Ethan"
 **Agent tools (read-only + propose):** `get_hold`, `get_payee_history` (Transaction Search baseline), `get_circle`, `record_red_flag`, `request_verification`, `propose_decision`.
 
 **Provider:** pluggable, chosen with `LLM_PROVIDER` in `.env`, so switching needs no code changes.
-- Default: **Google Gemini Flash** on the free Gemini API tier (chat, tool use, JSON structured output, image and audio input).
-- **Groq** (free) for voicemail transcription (Whisper) and as a fallback model when Gemini is rate-limited.
-- Anthropic Claude stays supported as an option.
+- Default for text: **Groq** `openai/gpt-oss-120b` (free; about 1 s per answer, JSON structured output). Groq also does voicemail transcription (Whisper).
+- **Google Gemini** (free tier) reads screenshots, since Groq has no vision model, and backs up text. Each key tries `gemini-3.8-flash`, then `gemini-flash-lite-latest`, which stayed up when the main model returned 503 "high demand". Each model gets 12 s before the next is tried.
+- `LLM_PROVIDER=gemini` puts Gemini first. An Anthropic provider is not implemented.
 
 Verified 2026-10-21 on the free tiers: `gemini-3.8-flash` (JSON-schema output worked, rated the grandparent-scam test HIGH; latency on the free tier needs measuring), Groq `openai/gpt-oss-120b` (chat), `whisper-large-v3-turbo` (speech-to-text) and `llama-prompt-guard-2` (prompt-injection screening for scam text and screenshots). Groq has no vision model, so images go to Gemini. Model IDs live in `.env` (`GEMINI_MODEL`, `GROQ_CHAT_MODEL`, `GROQ_STT_MODEL`); `gemini-2.5-flash` is retired for new users. The safety rules above are enforced in code, so a smaller free model can't weaken them. Demo scenarios keep a cached fallback so the hosted demo still plays if the free tier is rate-limited.
 
@@ -112,7 +112,7 @@ Verified 2026-10-21 on the free tiers: `gemini-3.8-flash` (JSON-schema output wo
 | Frontend | Next.js (App Router) + React + Tailwind, phone-first layouts for Nana/Ethan |
 | Payments UI | PayPal JS SDK (v6) for buyer approval |
 | Backend | Next.js route handlers (TypeScript); REST calls to PayPal (Orders, Payments, Payouts, Identity, Reporting) |
-| AI | Google Gemini API, free tier (tool use, structured output, vision, audio); Groq Whisper for voicemail; provider adapter so Claude/Groq can be swapped in |
+| AI | Groq (free) for text and Whisper voicemail transcription; Google Gemini API, free tier, for screenshots (vision) and text fallback; provider order set by `LLM_PROVIDER` |
 | Data | **Postgres everywhere**: PGlite (embedded Postgres, no install) locally, **Render Postgres** Basic plan for the hosted demo (paid from the $50 Render credits; Render's free database is deleted after 30 days, which would fall inside judging). **Drizzle ORM** for schema, migrations and queries. Neon or Supabase are drop-in alternatives via `DATABASE_URL`; Supabase free projects pause after 7 days idle, which is risky between submission and judging |
 | Jobs | Render cron or Workflows (expiry, cooling-off) |
 | Dev tooling | PayPal AI Toolkit, APIMatic Context Plugin (prize eligibility), Postman PayPal collections |

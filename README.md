@@ -24,6 +24,26 @@ Set `JUDGE_MODE=1` in `.env` and open http://127.0.0.1:3000/judge for the guided
 
 Checks: `npm test`, `npm run typecheck`, `npm run lint`.
 
+## Project layout
+
+| Path | What's there |
+|---|---|
+| `src/app/` | Pages (`/send`, `/holds/[id]`, `/verify/[token]`, `/judge`) and the API routes under `src/app/api/` |
+| `src/components/` | UI pieces: check-in chat, send form, status card, PayPal status |
+| `src/lib/gate/` | The Payment Gate and the hold state machine: the only code that moves money |
+| `src/lib/risk/` | Hard red-flag rules that the AI can't override |
+| `src/lib/ai/` | Groq and Gemini clients, the check-in agent, voicemail transcription |
+| `src/lib/checkin/` | Runs a check-in and hands the verdict to the gate |
+| `src/lib/paypal/` | Sandbox-only PayPal REST client |
+| `src/lib/db/` | Drizzle schema, database connection (PGlite or Postgres), demo seed |
+| `src/lib/demo/` | Judge Mode scenarios and reset |
+| `drizzle/` | Database migrations |
+| `tests/` | Vitest tests (in-memory database, fake PayPal, fake AI) |
+| `scripts/` | `seed.mts` (demo data) and `sandbox-check.mjs` (PayPal sandbox checks) |
+| `docs/` | Project documents (listed below) |
+
+`AGENTS.md` is written by Next.js for AI coding agents; `CLAUDE.md` holds this project's agent guide.
+
 ## Documents
 
 - [docs/PROJECT.md](docs/PROJECT.md): what SureSend is, the problem, how it works, prior art

@@ -42,7 +42,7 @@ async function HoldStatus({ params }: { params: Promise<{ id: string }> }) {
 
       {hold.riskReasons && hold.riskReasons.length > 0 && (
         <section className="rounded-2xl border border-stone-200 bg-white p-5">
-          <h3 className="font-semibold text-stone-900">Why we paused</h3>
+          <h3 className="font-semibold text-stone-900">{hold.risk === "LOW" ? "Why this looked safe" : "Why we paused"}</h3>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-stone-700">
             {hold.riskReasons.map((r) => (
               <li key={r}>{r}</li>

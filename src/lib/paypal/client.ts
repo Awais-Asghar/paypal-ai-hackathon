@@ -155,6 +155,8 @@ export class PayPalClient implements PayPalGateway {
         payment_source: {
           paypal: {
             experience_context: {
+              // Otherwise the checkout page shows the app's default name ("Test Store").
+              brand_name: "SureSend",
               user_action: "CONTINUE",
               shipping_preference: "NO_SHIPPING",
               return_url: input.returnUrl,
@@ -181,6 +183,15 @@ export class PayPalClient implements PayPalGateway {
   async getAuthorizationStatus(authorizationId: string) {
     const r = await this.request<{ status: string }>("GET", `/v2/payments/authorizations/${authorizationId}`);
     return r.status;
+  }
+
+  /** Read-only, for status displays: the payout item's status (SUCCESS, PENDING, UNCLAIMED...), else the batch's. */
+  async getPayoutStatus(batchId: string) {
+    const r = await this.request<{ batch_header: { batch_status: string }; items?: { transaction_status?: string }[] }>(
+      "GET",
+      `/v1/payments/payouts/${batchId}`,
+    );
+    return r.items?.[0]?.transaction_status ?? r.batch_header.batch_status;
   }
 
   async captureAuthorization(authorizationId: string, requestId: string) {

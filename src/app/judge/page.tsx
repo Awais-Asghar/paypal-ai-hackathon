@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { PayPalStatus } from "@/components/paypal-status";
+import { PayoutStatus, PayPalStatus } from "@/components/paypal-status";
 import { judgeMode, SCENARIOS } from "@/lib/demo/scenarios";
 import { money, STATE_COPY } from "@/lib/format";
 import { demoCircle, messagesFor, recentHolds } from "@/lib/queries";
@@ -98,6 +98,7 @@ async function JudgeContent({ searchParams }: { searchParams: Promise<Record<str
                   <th className="py-2 pr-3 font-medium">SureSend</th>
                   <th className="py-2 pr-3 font-medium">Risk</th>
                   <th className="py-2 pr-3 font-medium">PayPal says</th>
+                  <th className="py-2 pr-3 font-medium">Payout</th>
                   <th className="py-2 font-medium" />
                 </tr>
               </thead>
@@ -115,6 +116,11 @@ async function JudgeContent({ searchParams }: { searchParams: Promise<Record<str
                     <td className="py-3 pr-3">
                       <Suspense fallback={<span className="text-stone-400">checking...</span>}>
                         <PayPalStatus authorizationId={hold.paypalAuthorizationId} />
+                      </Suspense>
+                    </td>
+                    <td className="py-3 pr-3">
+                      <Suspense fallback={<span className="text-stone-400">checking...</span>}>
+                        <PayoutStatus batchId={hold.payoutBatchId} />
                       </Suspense>
                     </td>
                     <td className="py-3 text-right">

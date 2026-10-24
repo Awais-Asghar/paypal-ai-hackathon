@@ -28,7 +28,7 @@ Checks: `npm test`, `npm run typecheck`, `npm run lint`.
 
 | Path | What's there |
 |---|---|
-| `src/app/` | Pages (`/send`, `/holds/[id]`, `/verify/[token]`, `/judge`) and the API routes under `src/app/api/` |
+| `src/app/` | Pages (`/send`, `/holds/[id]`, `/holds/[id]/report`, `/verify/[token]`, `/family`, `/judge`) and the API routes under `src/app/api/` |
 | `src/components/` | UI pieces: check-in chat, send form, status card, PayPal status |
 | `src/lib/gate/` | The Payment Gate and the hold state machine: the only code that moves money |
 | `src/lib/risk/` | Hard red-flag rules that the AI can't override |
@@ -36,6 +36,7 @@ Checks: `npm test`, `npm run typecheck`, `npm run lint`.
 | `src/lib/checkin/` | Runs a check-in and hands the verdict to the gate |
 | `src/lib/paypal/` | Sandbox-only PayPal REST client |
 | `src/lib/db/` | Drizzle schema, database connection (PGlite or Postgres), demo seed |
+| `src/lib/aftercare/` | Scam report drafts for the Canadian Anti-Fraud Centre (aftercare) |
 | `src/lib/demo/` | Judge Mode scenarios and reset |
 | `drizzle/` | Database migrations |
 | `tests/` | Vitest tests (in-memory database, fake PayPal, fake AI) |

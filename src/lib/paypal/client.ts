@@ -1,4 +1,5 @@
 import "server-only";
+import { appBaseUrl } from "@/lib/env";
 
 // Thin REST client for the PayPal sandbox. Request shapes follow the calls verified in
 // scripts/sandbox-check.mjs. Money-moving methods are only called from the Payment Gate.
@@ -72,7 +73,7 @@ export function sandboxConfigFromEnv(env = process.env): PayPalConfig {
     clientSecret: env.PAYPAL_CLIENT_SECRET,
     currency: env.PAYPAL_CURRENCY || "CAD",
     webhookId: env.PAYPAL_WEBHOOK_ID || undefined,
-    loginRedirectUri: env.PAYPAL_LOGIN_REDIRECT_URI || "http://127.0.0.1:3000/callback",
+    loginRedirectUri: env.PAYPAL_LOGIN_REDIRECT_URI || `${appBaseUrl(env)}/callback`,
   };
 }
 

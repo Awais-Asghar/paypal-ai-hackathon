@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/db";
+import { appBaseUrl } from "@/lib/env";
 import { getPayPal } from "@/lib/paypal/client";
 import { PaymentGate } from "./payment-gate";
 
@@ -10,7 +11,7 @@ export function getGate() {
   gate ??= getDb().then(
     (db) =>
       new PaymentGate(db, getPayPal(), {
-        appBaseUrl: process.env.APP_BASE_URL || "http://127.0.0.1:3000",
+        appBaseUrl: appBaseUrl(),
         currency: process.env.PAYPAL_CURRENCY || "CAD",
         coolingOffHours: Number(process.env.COOLING_OFF_HOURS || 24),
       }),

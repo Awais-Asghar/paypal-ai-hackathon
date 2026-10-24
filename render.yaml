@@ -1,0 +1,93 @@
+# Render Blueprint for SureSend: the web app, its Postgres database and the scheduler.
+# Secrets are entered in the Render Dashboard when the Blueprint is created (sync: false). Never put their values here.
+# Steps: docs/DEPLOY.md
+
+services:
+  - type: web
+    name: suresend
+    runtime: node
+    plan: starter # always on, so judges never wait for a cold start
+    region: ohio
+    branch: main
+    buildCommand: npm ci && npm run build
+    preDeployCommand: npm run seed # runs migrations, then seeds the Collins family once
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: suresend-db
+          property: connectionString
+      - key: PAYPAL_BASE_URL
+        value: https://api-m.sandbox.paypal.com
+      - key: PAYPAL_CURRENCY
+        value: CAD
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_WEBHOOK_ID # fill in after creating the webhook on the Render URL (docs/DEPLOY.md)
+        sync: false
+      - key: SANDBOX_MARGARET_EMAIL
+        sync: false
+      - key: SANDBOX_ETHAN_EMAIL
+        sync: false
+      - key: SANDBOX_ROBERT_EMAIL
+        sync: false
+      - key: SANDBOX_ETHAN_PAYER_ID
+        value: SMLTYXGPGSUYC
+      - key: LLM_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_CHAT_MODEL
+        value: openai/gpt-oss-120b
+      - key: GROQ_STT_MODEL
+        value: whisper-large-v3-turbo
+      - key: GEMINI_API_KEY_Pro
+        sync: false
+      - key: GEMINI_API_KEY_Plus
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: GEMINI_FALLBACK_MODEL
+        value: gemini-flash-lite-latest
+      - key: CRON_SECRET
+        generateValue: true
+      - key: JUDGE_MODE
+        value: "1"
+      - key: COOLING_OFF_HOURS
+        value: "24"
+
+  - type: cron
+    name: suresend-sweep
+    runtime: node
+    plan: starter
+    region: ohio
+    branch: main
+    schedule: "*/10 * * * *"
+    buildCommand: "true"
+    startCommand: node scripts/sweep.mjs
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: SWEEP_HOSTPORT
+        fromService:
+          type: web
+          name: suresend
+          property: hostport
+      - key: CRON_SECRET
+        fromService:
+          type: web
+          name: suresend
+          envVarKey: CRON_SECRET
+
+databases:
+  - name: suresend-db
+    plan: 0.1c-256mb # smallest paid Postgres; the free one is deleted after 30 days, inside judging
+    region: ohio
+    databaseName: suresend
+    user: suresend
+    ipAllowList: [] # private network only: just the web service can connect

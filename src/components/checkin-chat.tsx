@@ -29,7 +29,10 @@ export function CheckinChat({ holdId, sample }: { holdId: string; sample?: { lab
       .finally(() => setBusy(false));
   }, [base]);
 
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), [turns]);
+  // Braces matter: newer Chrome returns a Promise from scrollIntoView, and an effect may only return a cleanup function.
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [turns]);
 
   async function run(step: () => Promise<void>) {
     setBusy(true);

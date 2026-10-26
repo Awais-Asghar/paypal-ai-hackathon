@@ -6,7 +6,7 @@ import { PayoutStatus, PayPalStatus } from "@/components/paypal-status";
 import { button, card, Eyebrow, Loading, Page } from "@/components/ui";
 import { judgeMode, SCENARIOS } from "@/lib/demo/scenarios";
 import { money, STATE_COPY } from "@/lib/format";
-import { demoCircle, messagesFor, recentHolds } from "@/lib/queries";
+import { demoCircle, messagesFor, recentHolds, recentWebhookEvents } from "@/lib/queries";
 
 const smallButton = button.small;
 
@@ -41,6 +41,7 @@ async function JudgeContent({ searchParams }: { searchParams: Promise<Record<str
   const rows = await recentHolds(data.circle.id);
   const family = data.members.filter((m) => m.role === "trusted");
   const inboxes = await Promise.all(family.map(async (m) => ({ member: m, count: (await messagesFor(m.id)).length })));
+  const webhooks = await recentWebhookEvents();
 
   return (
     <>
@@ -153,6 +154,27 @@ async function JudgeContent({ searchParams }: { searchParams: Promise<Record<str
               </tbody>
             </table>
           </div>
+        )}
+      </section>
+
+      <section className={card}>
+        <Eyebrow n="04">PayPal webhooks</Eyebrow>
+        <p className="mt-1 text-ink-2">PayPal&apos;s own notifications, each one signature-verified with PayPal before it is stored.</p>
+        {webhooks.length === 0 ? (
+          <p className="mt-4 text-ink-2">None received yet. They arrive a few seconds after a payment is approved, captured or voided.</p>
+        ) : (
+          <ul className="mt-4 divide-y divide-line">
+            {webhooks.map((w) => (
+              <li key={`${w.eventType}-${w.receivedAt.toISOString()}-${w.resourceId}`} className="flex flex-wrap items-baseline justify-between gap-2 py-2.5">
+                <span className="font-mono text-sm font-semibold text-ink">{w.eventType}</span>
+                <span className="text-sm text-muted">
+                  {w.receivedAt.toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Toronto" })} ·{" "}
+                  <span className="font-semibold text-brand">verified</span>
+                  {w.processedAt ? "" : ", processing"}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </>

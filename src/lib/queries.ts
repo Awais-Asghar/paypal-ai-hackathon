@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, count, desc, eq, notInArray, sum } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { checkins, circles, holds, members, outbox, payees } from "@/lib/db/schema";
+import { checkins, circles, holds, members, outbox, payees, webhookEvents } from "@/lib/db/schema";
 
 /** The demo runs one circle (seeded by `npm run seed`). */
 export async function demoCircle() {
@@ -50,6 +50,16 @@ export async function familyHistory(circleId: string, limit = 30) {
     .leftJoin(checkins, eq(checkins.holdId, holds.id))
     .where(realPayment(circleId))
     .orderBy(desc(holds.createdAt))
+    .limit(limit);
+}
+
+/** The latest PayPal webhook deliveries. Only signature-verified events are ever stored. */
+export async function recentWebhookEvents(limit = 6) {
+  const db = await getDb();
+  return db
+    .select({ eventType: webhookEvents.eventType, resourceId: webhookEvents.resourceId, receivedAt: webhookEvents.receivedAt, processedAt: webhookEvents.processedAt })
+    .from(webhookEvents)
+    .orderBy(desc(webhookEvents.receivedAt))
     .limit(limit);
 }
 

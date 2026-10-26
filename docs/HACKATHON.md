@@ -31,7 +31,7 @@ Status 2026-10-26: everything is built and written; what's left is the owner pas
 - [x] **Functional demo**, either a hosted URL *or* complete setup and run instructions in the repo, with any test credentials or sandbox logins judges need. Mockups and static prototypes are disqualifying. Hosted at https://suresend-71bi.onrender.com/judge; logins go in Devpost's judges-only field
 - [x] **Public repo** (GitHub, GitLab or Bitbucket) with all source, assets and instructions
 - [x] **Open-source LICENSE file** detectable in the repo's About section (MIT)
-- [ ] **Demo video** under 3:00, public on **YouTube**, showing the project running on its target device. No third-party trademarks or copyrighted music without permission. Made (2:07, no music); upload left
+- [x] **Demo video** under 3:00, public on **YouTube**, showing the project running on its target device. No third-party trademarks or copyrighted music without permission. 2:07, no music: https://youtu.be/JHUiZ52T3pA
 - [x] All materials in **English**
 - [x] If the project existed before Oct 1, explain what was significantly updated (it didn't: started Oct 21, 2026)
 - [ ] Sponsor questions on the form answered, for example the APIMatic plugin question: answers in docs/DEVPOST.md

@@ -1,6 +1,6 @@
 # Demo Plan: SureSend
 
-> **Status (2026-10-26): done.** The video was made from live recordings of the hosted site, with an AI narration voice and burned-in captions (2:07). The file is in the owner's Videos folder (`SureSend-demo.mp4`), and the pipeline is in [`video/`](../video/README.md). Judge access is live at https://suresend-71bi.onrender.com/judge. The plan below is the original; the schedule moved up because the owner had no time after Oct 26.
+> **Status (2026-10-26): done.** The video was made from live recordings of the hosted site, with an AI narration voice and burned-in captions (2:07), public at https://youtu.be/JHUiZ52T3pA. The file is in the owner's Videos folder (`SureSend-demo.mp4`), and the pipeline is in [`video/`](../video/README.md). Judge access is live at https://suresend-71bi.onrender.com/judge. The plan below is the original; the schedule moved up because the owner had no time after Oct 26.
 
 Two separate things have to work:
 

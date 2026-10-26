@@ -16,11 +16,11 @@ A pause between send and gone: SureSend holds scam-prone payments in PayPal unti
 
 - Try it (Judge Mode): https://suresend-71bi.onrender.com/judge
 - Code: https://github.com/Awais-Asghar/paypal-ai-hackathon
-- Video: (paste the YouTube link)
+- Video: https://youtu.be/JHUiZ52T3pA
 
 ## YouTube upload
 
-File: `C:\Users\awais\Videos\SureSend-demo.mp4` (2:07). Visibility **Public**, "not made for kids". Thumbnail: `C:\Users\awais\Videos\SureSend-thumbnail.png`.
+Uploaded 2026-10-26: https://youtu.be/JHUiZ52T3pA (Public, plays logged out). File: `C:\Users\awais\Videos\SureSend-demo.mp4` (2:07). Visibility **Public**, "not made for kids". Thumbnail: `C:\Users\awais\Videos\SureSend-thumbnail.png`.
 
 Title:
 

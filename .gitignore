@@ -38,3 +38,12 @@ npm-debug.log*
 
 # PGlite local database
 .pglite/
+
+# Demo video build files (sources are kept in C:\Users\awais\Videos\SureSend-video-source)
+video/raw/
+video/audio/
+video/cards/
+video/seg/
+video/out/
+video/sheets/
+video/.venv/

@@ -1,0 +1,22 @@
+[
+  { "id": "s0-hook", "voice": "en-US-BrianNeural", "rate": "+8%",
+    "text": "Nana? It's Ethan. I'm in trouble. I got arrested, and I need twenty-five hundred dollars for bail, right now. Please don't tell Mom. I lost my phone, so this is my new number." },
+  { "id": "s1-problem", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "Calls like this one drain families' savings. Canadians lost seven hundred and four million dollars to fraud in 2025. Bank fraud checks stay silent, because it really is Nana pressing send." },
+  { "id": "s2-solution", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "SureSend puts a pause between send and gone. The money waits in PayPal until an AI check-in, and the people Nana trusts, say it is safe." },
+  { "id": "s3-hold", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "Nana fills in the payment and approves it in PayPal. But SureSend only authorizes it. The money is reserved, not moved. Her screen says: held, not sent." },
+  { "id": "s4-checkin", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "Next, a friendly AI check-in asks the questions that expose scams. Who asked? Was it urgent? Were you told to keep it secret? It also reads the voicemail. Secrecy, a new number and an urgent bail story: a classic grandparent scam. Risk: high. These red flags are hard rules in code, so even a fooled AI can't lower them." },
+  { "id": "s5-verify", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "Because the story names Ethan, SureSend messages the contact the family saved at setup, never the caller. The real Ethan logs in with his own PayPal. A voice clone can copy his voice. It can't log in to his PayPal." },
+  { "id": "s6-safe", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "Ethan answers: that wasn't me. SureSend voids the authorization, and the twenty-five hundred dollars never left Nana's account." },
+  { "id": "s7-rent", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "Everyday payments still go straight through. Rent to her usual landlord: one question, low risk, then captured and paid out to Robert in seconds." },
+  { "id": "s8-proof", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "Judges can check everything live. PayPal itself reports voided and captured, the payout succeeded, and every webhook is signature-verified. The family dashboard keeps score, and the AI even drafts the report for the Canadian Anti-Fraud Centre." },
+  { "id": "s9-close", "voice": "en-US-AndrewNeural", "rate": "+0%",
+    "text": "SureSend. A pause between send and gone. Built on PayPal and AI, and hosted on Render." }
+]

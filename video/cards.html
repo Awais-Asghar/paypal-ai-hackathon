@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SureSend video cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Inter:wght@400..700&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
+<style>
+  :root { --paper:#faf8f3; --surface:#fff; --sunk:#f2eee6; --line:#e3dfd5; --line-strong:#c9c3b6; --ink:#141416; --ink2:#3a3a40; --muted:#66666b;
+          --brand:#2f5f63; --brand-soft:#e4eeec; --alert:#a8391f; --alert-soft:#f8e8e3; --wait:#7a5200; --wait-soft:#fbf0d9; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; }
+  body { font-family: Inter, sans-serif; background: var(--paper); color: var(--ink); }
+  .card { display: none; position: absolute; inset: 0; }
+  .card.on { display: block; }
+  .serif { font-family: Fraunces, Georgia, serif; font-weight: 500; letter-spacing: -0.02em; }
+  .mono { font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: 0.2em; font-size: 22px; color: var(--muted); }
+  .mono b { font-weight: 600; color: var(--brand); margin-right: 18px; }
+  .mono.alert b { color: var(--alert); }
+  .logo { display: flex; align-items: center; gap: 22px; }
+
+  /* Hook: an incoming voicemail */
+  #hook { background: var(--ink); color: var(--paper); }
+  #hook .wrap { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); width: 1400px; text-align: center; }
+  #hook .who { font-family: "JetBrains Mono", monospace; letter-spacing: 0.25em; text-transform: uppercase; font-size: 24px; color: #b9b4aa; }
+  #hook h1 { font-size: 96px; margin-top: 26px; }
+  #hook .wave { display: flex; gap: 10px; justify-content: center; align-items: center; height: 140px; margin-top: 40px; }
+  #hook .wave i { display: block; width: 12px; border-radius: 6px; background: var(--alert); }
+  #hook .note { margin-top: 48px; display: inline-block; border: 1px solid #4a4a50; border-radius: 999px; padding: 14px 28px; font-size: 24px; color: #d9d4ca; }
+
+  /* Problem: the figures */
+  #problem .wrap { position: absolute; left: 160px; right: 160px; top: 150px; }
+  #problem h1 { font-size: 84px; line-height: 1.05; max-width: 1400px; margin-top: 30px; }
+  #problem h1 em { color: var(--alert); }
+  #problem .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; margin-top: 90px; border-top: 1px solid var(--line); padding-top: 50px; }
+  #problem .stats b { display: block; font-family: Fraunces, serif; font-weight: 500; font-size: 92px; letter-spacing: -0.02em; }
+  #problem .stats span { display: block; margin-top: 8px; font-size: 30px; color: var(--ink2); }
+  #problem .src { margin-top: 40px; font-size: 22px; color: var(--muted); }
+
+  /* Solution / close: the brand */
+  .brand-card .wrap { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); text-align: center; width: 1500px; }
+  .brand-card .logo { justify-content: center; }
+  .brand-card .word { font-size: 120px; }
+  .brand-card h1 { font-size: 76px; margin-top: 50px; line-height: 1.1; }
+  .brand-card h1 em:first-child { color: var(--brand); } .brand-card h1 em:last-child { color: var(--alert); }
+  .brand-card .sub { font-size: 30px; color: var(--ink2); margin-top: 34px; line-height: 1.5; }
+  .brand-card .url { margin-top: 50px; font-family: "JetBrains Mono", monospace; font-size: 30px; color: var(--ink); border: 1px solid var(--line-strong); display: inline-block; padding: 16px 30px; border-radius: 999px; background: var(--surface); }
+  .brand-card .fine { margin-top: 34px; font-size: 22px; color: var(--muted); }
+
+  /* Side panels for phone scenes: text on the left, phone frame on the right */
+  .side .text { position: absolute; left: 160px; top: 250px; width: 820px; }
+  .side h1 { font-size: 88px; line-height: 1.04; margin-top: 28px; }
+  .side p { font-size: 34px; line-height: 1.45; color: var(--ink2); margin-top: 30px; }
+  .side .chips { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
+  .side .chips span { font-size: 24px; font-weight: 600; padding: 10px 20px; border-radius: 999px; }
+  .chip-alert { background: var(--alert-soft); color: var(--alert); }
+  .chip-brand { background: var(--brand-soft); color: var(--brand); }
+  .phone { position: absolute; left: 1206px; top: 50px; width: 482px; height: 988px; border-radius: 44px; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 30px 60px -30px rgba(20,20,22,.25); }
+  .phone::after { content: ""; position: absolute; left: 50%; bottom: 10px; width: 120px; height: 5px; margin-left: -60px; border-radius: 3px; background: var(--line-strong); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="mark" viewBox="0 0 64 64">
+    <g fill="none" stroke="#2f5f63" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 28V21a11 11 0 0 1 11-11h21c3.6 0 5.6 1.3 8 4.2l4.6 5.8"/>
+      <path d="M9 36v7a11 11 0 0 0 11 11h21c3.6 0 5.6-1.3 8-4.2l4.6-5.8"/>
+    </g>
+    <path d="M19 19.5 39.5 32 19 44.5l3.6-9.3L33.5 32l-10.9-3.2z" fill="#2f5f63" stroke="#2f5f63" stroke-width="1.6" stroke-linejoin="round"/>
+    <rect x="42.2" y="24.5" width="4.6" height="15" rx="2.3" fill="#a8391f"/>
+    <rect x="49.4" y="24.5" width="4.6" height="15" rx="2.3" fill="#a8391f"/>
+  </symbol>
+</svg>
+
+<section class="card" id="hook">
+  <div class="wrap">
+    <p class="who">Voicemail · Unknown number</p>
+    <h1 class="serif">&ldquo;Nana? It&rsquo;s Ethan.&rdquo;</h1>
+    <div class="wave" id="wave"></div>
+    <p class="note">This voice is AI-generated for the demo. Real scammers clone voices the same way.</p>
+  </div>
+</section>
+
+<section class="card" id="problem">
+  <div class="wrap">
+    <p class="mono alert"><b>●</b>Why it matters</p>
+    <h1 class="serif">The victim presses send, so the bank sees a <em>normal payment.</em></h1>
+    <div class="stats">
+      <div><b>$704M</b><span>lost to fraud by Canadians in 2025</span></div>
+      <div><b>5 to 10%</b><span>of fraud is ever reported</span></div>
+      <div><b>$137.9M</b><span>lost by Canadian seniors in 2024</span></div>
+    </div>
+    <p class="src">Source: Canadian Anti-Fraud Centre</p>
+  </div>
+</section>
+
+<section class="card brand-card" id="solution">
+  <div class="wrap">
+    <div class="logo"><svg width="150" height="150"><use href="#mark"/></svg><span class="serif word">SureSend<span style="color:var(--brand)">.</span></span></div>
+    <h1 class="serif">A pause between <em>send</em> and <em>gone.</em></h1>
+    <p class="sub">The money waits in PayPal until an AI check-in<br>and the people you trust say it is safe.</p>
+  </div>
+</section>
+
+<section class="card side" id="s3">
+  <div class="text">
+    <p class="mono"><b>01</b>Hold, don&rsquo;t send</p>
+    <h1 class="serif">Reserved in PayPal, not moved.</h1>
+    <p>Nana approves in PayPal, but SureSend only <strong>authorizes</strong> the payment. Nothing leaves her account yet.</p>
+  </div>
+  <div class="phone"></div>
+</section>
+
+<section class="card side" id="s4">
+  <div class="text">
+    <p class="mono"><b>02</b>A friendly AI check-in</p>
+    <h1 class="serif">The AI asks what a scammer hopes nobody will.</h1>
+    <div class="chips"><span class="chip-alert">Keep it secret</span><span class="chip-alert">New number</span><span class="chip-alert">Urgent bail</span></div>
+    <p>Red flags are hard rules in code. The AI can raise the risk, never lower it.</p>
+  </div>
+  <div class="phone"></div>
+</section>
+
+<section class="card side" id="s5">
+  <div class="text">
+    <p class="mono"><b>03</b>Is this really you?</p>
+    <h1 class="serif">A voice can be cloned. A PayPal login can&rsquo;t.</h1>
+    <p>The message goes only to the contact saved at setup. Ethan proves it&rsquo;s him with <strong>Log In with PayPal</strong>.</p>
+  </div>
+  <div class="phone"></div>
+</section>
+
+<section class="card side" id="s6">
+  <div class="text">
+    <p class="mono"><b>04</b>Void when in doubt</p>
+    <h1 class="serif">$2,500 kept safe.</h1>
+    <p>Ethan says it wasn&rsquo;t him. The authorization is <strong>voided</strong>, and the money never left Nana&rsquo;s account.</p>
+    <div class="chips"><span class="chip-brand">Authorization: VOIDED</span></div>
+  </div>
+  <div class="phone"></div>
+</section>
+
+<section class="card side" id="s7">
+  <div class="text">
+    <p class="mono"><b>05</b>Everyday payments</p>
+    <h1 class="serif">Rent still goes through in seconds.</h1>
+    <p>A known payee and a normal answer: low risk, <strong>captured</strong> and <strong>paid out</strong> only to the verified person.</p>
+    <div class="chips"><span class="chip-brand">CAPTURED</span><span class="chip-brand">Payout: SUCCESS</span></div>
+  </div>
+  <div class="phone"></div>
+</section>
+
+<section class="card brand-card" id="close">
+  <div class="wrap">
+    <div class="logo"><svg width="130" height="130"><use href="#mark"/></svg><span class="serif word" style="font-size:104px">SureSend<span style="color:var(--brand)">.</span></span></div>
+    <h1 class="serif">A pause between <em>send</em> and <em>gone.</em></h1>
+    <p class="sub">PayPal Orders (authorize, capture, void) · Log In with PayPal · Payouts · Webhooks<br>AI check-in with Groq and Gemini · Hosted on Render</p>
+    <p class="url">suresend-71bi.onrender.com</p>
+    <p class="fine">Built for the PayPal AI Hackathon · PayPal sandbox, no real money · Narration: AI-generated voice</p>
+  </div>
+</section>
+
+<script>
+  const wave = document.getElementById("wave");
+  [38,70,52,96,60,120,84,46,110,72,128,90,58,104,66,40,88,118,74,50,98,62,36,80,56].forEach((h) => { const i = document.createElement("i"); i.style.height = h + "px"; wave.append(i); });
+  const id = new URLSearchParams(location.search).get("card") || "hook";
+  document.getElementById(id).classList.add("on");
+</script>
+</body>
+</html>

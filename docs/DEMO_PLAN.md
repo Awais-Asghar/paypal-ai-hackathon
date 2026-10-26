@@ -1,5 +1,7 @@
 # Demo Plan: SureSend
 
+> **Status (2026-10-26): done.** The video was made from live recordings of the hosted site, with an AI narration voice and burned-in captions (2:07). The file is in the owner's Videos folder (`SureSend-demo.mp4`), and the pipeline is in [`video/`](../video/README.md). Judge access is live at https://suresend-71bi.onrender.com/judge. The plan below is the original; the schedule moved up because the owner had no time after Oct 26.
+
 Two separate things have to work:
 
 1. **The demo video**: under 3:00, public on YouTube. It's the main input for *Presentation* (20% of the score) and the whole basis for **Best Demo Delivery** ($5k). Judges aren't required to run the app, so many will only watch this.

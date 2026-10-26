@@ -44,6 +44,7 @@ Hosted demo: deployed on Render from [`render.yaml`](render.yaml) (web app, Post
 | `tests/` | Vitest tests (in-memory database, fake PayPal, fake AI) |
 | `scripts/` | `seed.mts` (demo data), `sweep.mjs` (Render cron job) and `sandbox-check.mjs` (PayPal sandbox checks) |
 | `render.yaml` | Render Blueprint for the hosted demo |
+| `video/` | How the demo video was made: narration script, title cards, build script |
 | `docs/` | Project documents (listed below) |
 
 `AGENTS.md` is written by Next.js for AI coding agents; `CLAUDE.md` holds this project's agent guide.

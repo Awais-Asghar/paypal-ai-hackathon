@@ -18,6 +18,33 @@ A pause between send and gone: SureSend holds scam-prone payments in PayPal unti
 - Code: https://github.com/Awais-Asghar/paypal-ai-hackathon
 - Video: (paste the YouTube link)
 
+## YouTube upload
+
+File: `C:\Users\awais\Videos\SureSend-demo.mp4` (2:07). Visibility **Public**, "not made for kids". Thumbnail: `C:\Users\awais\Videos\SureSend-thumbnail.png`.
+
+Title:
+
+```
+SureSend: a pause between send and gone (PayPal AI Hackathon)
+```
+
+Description:
+
+```
+SureSend holds a scam-prone payment in PayPal until an AI check-in and the people you trust say it is safe. If it's a scam, the authorization is voided and the money never leaves.
+
+Live demo: https://suresend-71bi.onrender.com/judge
+Code: https://github.com/Awais-Asghar/paypal-ai-hackathon
+
+Built with PayPal Orders (authorize, capture, void), Log In with PayPal, Payouts and Webhooks; an AI check-in with Groq and Gemini; hosted on Render. PayPal sandbox only, no real money.
+
+Narration and the scam voicemail use AI-generated voices, made for this demo.
+```
+
+## Image gallery
+
+Upload from `C:\Users\awais\Videos\SureSend-gallery\`, in this order: `00-logo.png`, `01-s3.png` (held, not sent), `02-s4.png` (AI check-in), `03-s5.png` (Is this really you?), `04-s6.png` ($2,500 kept safe), `05-s7.png` (rent sent), `06-judge-mode.png` (live PayPal status and verified webhooks), `07-problem.png` (the figures).
+
 ---
 
 ## About the project

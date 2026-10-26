@@ -20,19 +20,21 @@ PayPal-family services count: Venmo, Braintree, Xoom, Honey, Zettle, Paidy, Hype
 
 ## Submission checklist
 
-- [ ] Registered on Devpost for the hackathon
-- [ ] PayPal Developer account with sandbox apps (business plus personal test accounts)
-- [ ] **Project name** and **elevator pitch** (a few sentences)
-- [ ] **Project story**: inspiration, how it was built, tools, challenges
-- [ ] **Text description** of features and functionality
-- [ ] **Tools list**: each AI model or service used and *how* it was used
-- [ ] **Functional demo**, either a hosted URL *or* complete setup and run instructions in the repo, with any test credentials or sandbox logins judges need. Mockups and static prototypes are disqualifying.
-- [ ] **Public repo** (GitHub, GitLab or Bitbucket) with all source, assets and instructions
-- [ ] **Open-source LICENSE file** detectable in the repo's About section
-- [ ] **Demo video** under 3:00, public on **YouTube**, showing the project running on its target device. No third-party trademarks or copyrighted music without permission.
-- [ ] All materials in **English**
-- [ ] If the project existed before Oct 1, explain what was significantly updated
-- [ ] Sponsor questions on the form answered, for example the APIMatic plugin question
+Status 2026-10-26: everything is built and written; what's left is the owner pasting and submitting on Devpost (see CLAUDE.md "Owner steps left").
+
+- [x] Registered on Devpost for the hackathon
+- [x] PayPal Developer account with sandbox apps (business plus personal test accounts)
+- [ ] **Project name** and **elevator pitch** (a few sentences): written in docs/DEVPOST.md, to paste
+- [ ] **Project story**: inspiration, how it was built, tools, challenges: written in docs/DEVPOST.md, to paste
+- [ ] **Text description** of features and functionality: written in docs/DEVPOST.md, to paste
+- [ ] **Tools list**: each AI model or service used and *how* it was used: written in docs/DEVPOST.md, to paste
+- [x] **Functional demo**, either a hosted URL *or* complete setup and run instructions in the repo, with any test credentials or sandbox logins judges need. Mockups and static prototypes are disqualifying. Hosted at https://suresend-71bi.onrender.com/judge; logins go in Devpost's judges-only field
+- [x] **Public repo** (GitHub, GitLab or Bitbucket) with all source, assets and instructions
+- [x] **Open-source LICENSE file** detectable in the repo's About section (MIT)
+- [ ] **Demo video** under 3:00, public on **YouTube**, showing the project running on its target device. No third-party trademarks or copyrighted music without permission. Made (2:07, no music); upload left
+- [x] All materials in **English**
+- [x] If the project existed before Oct 1, explain what was significantly updated (it didn't: started Oct 21, 2026)
+- [ ] Sponsor questions on the form answered, for example the APIMatic plugin question: answers in docs/DEVPOST.md
 
 ## Judging
 

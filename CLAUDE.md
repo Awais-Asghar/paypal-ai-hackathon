@@ -28,9 +28,15 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - **Deliverables:** public repo with a LICENSE, working demo (hosted URL or full run instructions), a YouTube demo video under 3 minutes, and a written description plus tools list.
 - **Writing style:** no emojis and no em dashes anywhere (docs/RULES.md §7).
 
-## Current status (updated 2026-10-23)
+## Current status (updated 2026-10-26)
 
-**Phase:** foundation, AI check-in, Send page and Judge Mode built (PR #1, reviewed and fast-forwarded into local `main` on 2026-10-23). Next: run the full flow against the real sandbox on the owner's machine, then the family dashboard with sign-in, email delivery for the outbox, the aftercare text, and deployment to Render. Feature freeze Nov 6.
+**Phase: built, deployed, verified, video made. Only the owner's submission steps remain.** The owner has no time after Mon 2026-10-26, so the project is effectively frozen; only fix what blocks submission.
+
+- **Live:** https://suresend-71bi.onrender.com (Judge Mode at `/judge`). Full flow verified on the host 2026-10-26.
+- **Video:** `C:\Users\awais\Videos\SureSend-demo.mp4` (2:07, 1080p, AI narration and the AI "grandson" voicemail disclosed on screen, captions burned in). Thumbnail `C:\Users\awais\Videos\SureSend-thumbnail.png`; Devpost gallery images in `C:\Users\awais\Videos\SureSend-gallery\`. Pipeline in `video/` (see `video/README.md`); sources in `C:\Users\awais\Videos\SureSend-video-source\`.
+- **Devpost text:** `docs/DEVPOST.md` (pitch, story, PayPal and AI usage, tools list, judge FAQ, Built with, judge testing steps, sponsor answers). Sandbox passwords are deliberately not in the repo.
+- **Owner steps left:** (1) watch the video, upload it to YouTube as Public with the title and description in `docs/DEVPOST.md`'s video section, check it logged out; (2) paste `docs/DEVPOST.md` into Devpost, add the video link, gallery images and the two sandbox passwords in the judges-only field; (3) submit (editable until Nov 12, 12:00 pm PT); (4) send the YouTube link to the agent, who adds it to README.md and docs/DEVPOST.md and pushes (with permission); (5) after judging ends Dec 15, delete the three Render resources so the card is never charged.
+- **Built earlier (2026-10-22 to 10-24)**, details below: PR #1 (foundation, AI check-in, Send page, Judge Mode) reviewed and merged; then the fixes, family dashboard, aftercare, design system and Render deploy.
 
 **Built (2026-10-22), all checks pass (`npm test`, `npm run typecheck`, `npm run lint`, `npm run build`):**
 - Next.js 16 app (App Router, Tailwind, Cache Components on). DB-reading pages call `await connection()` inside `<Suspense>`.
@@ -48,7 +54,7 @@ All project docs live in [docs/](docs/). Only this file and README.md stay at th
 - **Full app flow verified live (2026-10-24)** in Chrome against the real sandbox and live AI: grandparent scam $2,500 (Margaret approves, check-in with sample voicemail, HIGH, "Is this really you?" to Ethan, Ethan logs in with PayPal, payer_id matched, "not me", authorization VOIDED) and rent $900 (one question, LOW, CAPTURED, payout to Robert SUCCESS). Judge Mode now shows a live Payout column. Fixed on the way: the check-in chat crashed in current Chrome (its scroll effect returned the Promise that `scrollIntoView` now returns).
 - Family dashboard and aftercare (2026-10-24): `/family` shows money kept safe, sent safely and waiting, the history with the AI's family summary plus the real outcome (from the hold's state, since the summary is written before the outcome), the circle with PayPal-verified members, and saved payees. It is read-only on purpose: there is no sign-in yet, so approvals happen only through the PayPal-verified "Is this really you?" link. `/holds/[id]/report` drafts a Canadian Anti-Fraud Centre report for any MEDIUM or HIGH risk hold (`src/lib/ai/report-writer.ts`, `src/lib/aftercare/`, table `reports`). The AI writes only the narrative; amounts, dates, outcome and the CAFC contacts (online reportcyberandfraud.canada.ca, phone 1-888-495-8501, checked 2026-10-24) come from the hold and fixed text, with a template fallback when no model answers. Verified live on the voided grandparent hold. 52 tests.
 - Testing tip: use separate browser contexts (or a private window) for Margaret and Ethan, or PayPal reuses the last login. Orders set `brand_name: "SureSend"`, or the checkout would say "Test Store" (the app's default name).
-- Tests need `hookTimeout: 30_000` (in `vitest.config.mts`): each test boots an in-memory PGlite, and on Windows that setup can pass the 10 s default when files run in parallel.
+- Tests need `hookTimeout: 90_000` (in `vitest.config.mts`): each test boots an in-memory PGlite, and on Windows the first boot per worker can take over 30 s when the 7 files run in parallel next to a dev server. 52 tests.
 
 **Verified in the PayPal sandbox (Canada, CAD)** with `scripts/sandbox-check.mjs`:
 - Token and scopes, Transaction Search, Webhooks API
@@ -76,7 +82,7 @@ The PayPal app shows as "HoldOn" in the dashboard list (page title SureSend); it
 - Hosting: Render (sponsor prize). Not Vercel. Moved up to 2026-10-25 (the owner has no time after Monday Oct 26). `render.yaml` (validated against Render's schema) creates the `starter` web service (pre-deploy `npm run seed`), Postgres `0.1c-256mb` on the private network only, and the `suresend-sweep` cron job every 10 minutes (`scripts/sweep.mjs` over the private network with `CRON_SECRET`). The app takes its address from `RENDER_EXTERNAL_URL` (`src/lib/env.ts`). Owner steps: docs/DEPLOY.md. **Live since 2026-10-24: https://suresend-71bi.onrender.com** (Judge Mode at `/judge`). Its Log In with PayPal return URL and the webhook (`/api/webhooks/paypal`, all events, ID in Render's `PAYPAL_WEBHOOK_ID`) are registered in the PayPal app. Checked on the host: pages, seeded data, a real sandbox order, the cron route guard. **Full flow verified on the host (2026-10-26):** grandparent scam (HIGH, Ethan logged in with PayPal through the Render callback, "not me", VOIDED) and rent (LOW, CAPTURED, payout SUCCESS), and PayPal webhooks delivered and signature-verified (order approved, authorization created and voided, capture completed, payout batch and item success), shown in Judge Mode's "PayPal webhooks" panel.
 - Log In with PayPal return URL is `http://127.0.0.1:3000/callback`; PayPal rejects `localhost` for it.
 
-**Not done yet (owner side):** install the PayPal AI Toolkit plugin and the APIMatic Context Plugin (APIMatic prize eligibility).
+**Not done (owner side), skipped on purpose:** the PayPal AI Toolkit plugin and the APIMatic Context Plugin were never installed, so the Devpost answer to the APIMatic question is "No". Optional only.
 
 ## How to work here
 

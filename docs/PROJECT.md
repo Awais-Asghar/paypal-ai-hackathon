@@ -81,5 +81,5 @@ Run with [`scripts/sandbox-check.mjs`](../scripts/sandbox-check.mjs). Setup step
 - [x] Payouts from the business account to a personal sandbox account: batch `W3YARBZK4AA2Q` SUCCESS, 1.00 CAD to Ethan (2026-10-21). Note: the Payouts amount field is `currency`, not `currency_code`
 - [x] Log In with PayPal enabled on the app; code exchange + userinfo returns a stable PayPal user ID/email: Ethan logged in, `payer_id` SMLTYXGPGSUYC, email matched (2026-10-21). Return URL must be `http://127.0.0.1:3000/callback`; `verified_account` is not returned in sandbox, so match on `payer_id`
 - [x] Transaction Search returns data (2026-10-21, after requesting a fresh token with `ignoreCache=true`)
-- [ ] Webhook delivery with signature verification (on the Render URL, so no tunnel is needed)
+- [x] Webhook delivery with signature verification on the Render URL: six event types verified in one live run (2026-10-26)
 - [ ] PayPal AI Toolkit and APIMatic Context Plugin installed in Claude Code

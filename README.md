@@ -55,6 +55,7 @@ Hosted demo: deployed on Render from [`render.yaml`](render.yaml) (web app, Post
 - [docs/DEMO_PLAN.md](docs/DEMO_PLAN.md): demo video script and judge access plan
 - [docs/PAYPAL_SETUP.md](docs/PAYPAL_SETUP.md): PayPal developer account and sandbox setup
 - [docs/DEPLOY.md](docs/DEPLOY.md): deploying the hosted demo on Render
+- [docs/DEVPOST.md](docs/DEVPOST.md): the Devpost submission text, tools list and judge testing steps
 - [docs/HACKATHON.md](docs/HACKATHON.md): hackathon requirements, judging, prizes
 - [docs/WEBINAR_TRANSCRIPTS.md](docs/WEBINAR_TRANSCRIPTS.md): official webinar transcripts
 - [docs/RULES.md](docs/RULES.md) / [CLAUDE.md](CLAUDE.md): contributor and AI-agent rules
